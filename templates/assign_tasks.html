@@ -1,0 +1,326 @@
+<! -- written by Rajshree -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Assign Tasks</title>
+    <!-- Google Fonts (Roboto) -->
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <!-- Font Awesome for Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css"/>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Roboto', sans-serif;
+        }
+        body {
+            background: url("{{ url_for('static', filename='images/9629_Premium_Coffee-Location-58.webp') }}") no-repeat center center fixed;
+            background-size: cover;
+            min-height: 100vh;
+            position: relative;
+        }
+        body::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.75);
+            z-index: 1;
+        }
+        .tasks-container {
+            position: relative;
+            z-index: 2;
+            padding: 20px;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+        .tasks-header {
+            background: #1a252f;
+            color: #d4af37;
+            padding: 20px;
+            border-bottom: 1px solid #d4af37;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+        .tasks-header h2 {
+            font-size: 26px;
+            font-weight: 400;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            letter-spacing: 1px;
+        }
+        .tasks-header h2 i {
+            font-size: 28px;
+        }
+        .tasks-header .nav-link {
+            color: #d4af37;
+            font-size: 14px;
+            font-weight: 300;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            transition: color 0.3s ease;
+        }
+        .tasks-header .nav-link:hover {
+            color: #f0c14b;
+        }
+        .tasks-header .search-bar {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .tasks-header .search-bar input {
+            padding: 8px 12px;
+            border: 1px solid #d4af37;
+            background: #f9fafb;
+            outline: none;
+            font-size: 14px;
+            color: #1a252f;
+        }
+        .tasks-header .search-bar button {
+            background: #d4af37;
+            color: #1a252f;
+            padding: 8px 12px;
+            border: none;
+            font-size: 14px;
+            transition: background 0.3s ease;
+        }
+        .tasks-header .search-bar button:hover {
+            background: #f0c14b;
+        }
+        .tasks-content {
+            flex: 1;
+            padding: 30px;
+            max-width: 1200px;
+            margin: 0 auto;
+            width: 100%;
+        }
+        .table-container {
+            background: #fff;
+            border: 1px solid #d4af37;
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
+            overflow-x: auto;
+        }
+        .table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 0;
+        }
+        .table thead {
+            background: #1a252f;
+            color: #d4af37;
+        }
+        .table thead th {
+            padding: 15px;
+            font-weight: 500;
+            text-align: left;
+            border-bottom: 1px solid #d4af37;
+        }
+        .table tbody tr {
+            transition: background 0.3s ease;
+        }
+        .table tbody tr:hover {
+            background: #f9fafb;
+        }
+        .table tbody td {
+            padding: 15px;
+            border-bottom: 1px solid #e5e7eb;
+            color: #1a252f;
+        }
+        .table tbody td form {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+        .table tbody td label {
+            color: #1a252f;
+            font-weight: 500;
+            font-size: 14px;
+        }
+        .table tbody td select {
+            padding: 8px;
+            border: 1px solid #d1d5db;
+            border-left: 3px solid #d4af37;
+            background: #f9fafb;
+            outline: none;
+            transition: border-color 0.3s ease;
+            font-size: 14px;
+        }
+        .table tbody td select:focus {
+            border-color: #d4af37;
+            border-left-color: #d4af37;
+        }
+        .btn-assign {
+            background: #d4af37;
+            color: #1a252f;
+            padding: 8px 15px;
+            font-size: 14px;
+            font-weight: 500;
+            border: none;
+            transition: background 0.3s ease, transform 0.1s ease;
+        }
+        .btn-assign:hover {
+            background: #f0c14b;
+            transform: translateY(-1px);
+        }
+        .flash-messages {
+            margin-bottom: 25px;
+        }
+        .flash-messages .alert {
+            background: #fefce8;
+            color: #854d0e;
+            border: 1px solid #fef08a;
+            padding: 12px;
+            margin-bottom: 10px;
+            text-align: center;
+            font-size: 14px;
+        }
+        .flash-messages .alert-success {
+            background: #ecfdf5;
+            color: #065f46;
+            border-color: #6ee7b7;
+        }
+        .flash-messages .alert-danger {
+            background: #fef2f2;
+            color: #991b1b;
+            border-color: #f87171;
+        }
+        @media (max-width: 768px) {
+            .tasks-header {
+                padding: 15px;
+            }
+            .tasks-header h2 {
+                font-size: 22px;
+            }
+            .tasks-content {
+                padding: 20px;
+            }
+            .table thead th,
+            .table tbody td {
+                padding: 10px;
+                font-size: 14px;
+            }
+            .table tbody td form {
+                gap: 5px;
+            }
+            .table tbody td select,
+            .table tbody td label {
+                font-size: 12px;
+            }
+            .btn-assign {
+                padding: 6px 10px;
+                font-size: 12px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="tasks-container">
+        <div class="tasks-header">
+            <h2><i class="fas fa-tasks"></i> Assign Tasks & Machines</h2>
+            <div class="search-bar">
+                <input type="text" placeholder="Search orders..." id="searchInput">
+                <button><i class="fas fa-search"></i></button>
+            </div>
+            <a href="{{ url_for('dashboard') }}" class="nav-link"><i class="fas fa-arrow-left"></i> Back to Dashboard</a>
+        </div>
+
+        <div class="tasks-content">
+            <!-- Flash Messages -->
+            {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+            <div class="flash-messages">
+                {% for category, message in messages %}
+                <div class="alert alert-{{ category }}">{{ message }}</div>
+                {% endfor %}
+            </div>
+            {% endif %}
+            {% endwith %}
+
+            <!-- Orders Table -->
+            <div class="table-container">
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>Order ID</th>
+                            <th>Customer</th>
+                            <th>Product</th>
+                            <th>Quantity</th>
+                            <th>Assign Task</th>
+                        </tr>
+                    </thead>
+                    <tbody id="ordersTable">
+                        {% for order in approved_orders %}
+                        <tr>
+                            <td>{{ order[0] }}</td>
+                            <td>{{ order[1] }}</td>
+                            <td>{{ order[2] }}</td>
+                            <td>{{ order[3] }}</td>
+                            <td>
+                                <form method="POST" action="{{ url_for('assign_task') }}">
+                                    <input type="hidden" name="order_id" value="{{ order[0] }}">
+                                    <input type="hidden" name="product_name" value="{{ order[2] }}">
+                                    <input type="hidden" name="quantity" value="{{ order[3] }}">
+
+                                    <label>Stamper:</label>
+                                    <select name="stamper_id" class="form-control" required>
+                                        {% for stamper in stampers %}
+                                        <option value="{{ stamper[0] }}">{{ stamper[1] }}</option>
+                                        {% endfor %}
+                                    </select>
+
+                                    <label>Production Operative:</label>
+                                    <select name="operative_id" class="form-control" required>
+                                        {% for operative in operatives %}
+                                        <option value="{{ operative[0] }}">{{ operative[1] }}</option>
+                                        {% endfor %}
+                                    </select>
+
+                                    <label>Machine:</label>
+                                    <select name="machine_id" class="form-control" required>
+                                        {% for machine in machines %}
+                                        <option value="{{ machine[0] }}">{{ machine[1] }}</option>
+                                        {% endfor %}
+                                    </select>
+
+                                    <button type="submit" class="btn-assign">Assign Task</button>
+                                </form>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Search functionality for the orders table
+        document.getElementById('searchInput').addEventListener('input', function(e) {
+            const searchTerm = e.target.value.toLowerCase();
+            const rows = document.querySelectorAll('#ordersTable tr');
+            rows.forEach(row => {
+                const orderId = row.cells[0].textContent.toLowerCase();
+                const customer = row.cells[1].textContent.toLowerCase();
+                const product = row.cells[2].textContent.toLowerCase();
+                if (orderId.includes(searchTerm) || customer.includes(searchTerm) || product.includes(searchTerm)) {
+                    row.style.display = '';
+                } else {
+                    row.style.display = 'none';
+                }
+            });
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,319 @@
+<! -- written by Nidhi -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <!-- Meta configuration -->
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Certifications</title>
+
+    <!-- Google Fonts: Roboto -->
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
+
+    <!-- Font Awesome for icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css"/>
+
+    <style>
+        /* Base and reset styles */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Roboto', sans-serif;
+        }
+
+        /* Background with image and overlay */
+        body {
+            background: url("{{ url_for('static', filename='images/9629_Premium_Coffee-Location-58.webp') }}") no-repeat center center fixed;
+            background-size: cover;
+            min-height: 100vh;
+            position: relative;
+        }
+
+        body::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.75);
+            z-index: 1;
+        }
+
+        /* Main wrapper */
+        .certifications-container {
+            position: relative;
+            z-index: 2;
+            padding: 20px;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* Header section with search and nav */
+        .certifications-header {
+            background: #1a252f;
+            color: #d4af37;
+            padding: 20px;
+            border-bottom: 1px solid #d4af37;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+
+        .certifications-header h2 {
+            font-size: 26px;
+            font-weight: 400;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            letter-spacing: 1px;
+        }
+
+        .certifications-header h2 i {
+            font-size: 28px;
+        }
+
+        /* Back navigation link */
+        .certifications-header .nav-link {
+            color: #d4af37;
+            font-size: 14px;
+            font-weight: 300;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            transition: color 0.3s ease;
+        }
+
+        .certifications-header .nav-link:hover {
+            color: #f0c14b;
+        }
+
+        /* Search bar layout */
+        .certifications-header .search-bar {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .certifications-header .search-bar input {
+            padding: 8px 12px;
+            border: 1px solid #d4af37;
+            background: #f9fafb;
+            outline: none;
+            font-size: 14px;
+            color: #1a252f;
+        }
+
+        .certifications-header .search-bar button {
+            background: #d4af37;
+            color: #1a252f;
+            padding: 8px 12px;
+            border: none;
+            font-size: 14px;
+            transition: background 0.3s ease;
+        }
+
+        .certifications-header .search-bar button:hover {
+            background: #f0c14b;
+        }
+
+        /* Content wrapper */
+        .certifications-content {
+            flex: 1;
+            padding: 30px;
+            max-width: 1200px;
+            margin: 0 auto;
+            width: 100%;
+        }
+
+        /* Certificate image (decorative) */
+        .certifications-image {
+            display: block;
+            max-width: 200px;
+            margin: 0 auto 20px;
+            border-radius: 10px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+        }
+
+        /* Table wrapper for horizontal scroll on small screens */
+        .table-container {
+            background: #fff;
+            border: 1px solid #d4af37;
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
+            overflow-x: auto;
+        }
+
+        /* Table formatting */
+        .table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .table thead {
+            background: #1a252f;
+            color: #d4af37;
+        }
+
+        .table thead th {
+            padding: 15px;
+            font-weight: 500;
+            text-align: left;
+            border-bottom: 1px solid #d4af37;
+        }
+
+        .table tbody tr {
+            transition: background 0.3s ease;
+        }
+
+        .table tbody tr:hover {
+            background: #f9fafb;
+        }
+
+        .table tbody td {
+            padding: 15px;
+            border-bottom: 1px solid #e5e7eb;
+            color: #1a252f;
+        }
+
+        /* Flash message styling */
+        .flash-messages {
+            margin-bottom: 25px;
+        }
+
+        .flash-messages .alert {
+            background: #fefce8;
+            color: #854d0e;
+            border: 1px solid #fef08a;
+            padding: 12px;
+            margin-bottom: 10px;
+            text-align: center;
+            font-size: 14px;
+        }
+
+        .flash-messages .alert-success {
+            background: #ecfdf5;
+            color: #065f46;
+            border-color: #6ee7b7;
+        }
+
+        .flash-messages .alert-danger {
+            background: #fef2f2;
+            color: #991b1b;
+            border-color: #f87171;
+        }
+
+        /* Responsive tweaks for smaller devices */
+        @media (max-width: 768px) {
+            .certifications-header {
+                padding: 15px;
+            }
+
+            .certifications-header h2 {
+                font-size: 22px;
+            }
+
+            .certifications-content {
+                padding: 20px;
+            }
+
+            .certifications-image {
+                max-width: 150px;
+            }
+
+            .table thead th,
+            .table tbody td {
+                padding: 10px;
+                font-size: 14px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Main container for the certifications page -->
+    <div class="certifications-container">
+        <!-- Header with title, search, and nav -->
+        <div class="certifications-header">
+            <h2><i class="fas fa-certificate"></i> Certifications</h2>
+            <div class="search-bar">
+                <input type="text" placeholder="Search certifications..." id="searchInput">
+                <button><i class="fas fa-search"></i></button>
+            </div>
+            <a href="{{ url_for('dashboard') }}" class="nav-link"><i class="fas fa-arrow-left"></i> Back to Dashboard</a>
+        </div>
+
+        <div class="certifications-content">
+            <!-- Flash messages for alerts -->
+            {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+            <div class="flash-messages">
+                {% for category, message in messages %}
+                <div class="alert alert-{{ category }}">{{ message }}</div>
+                {% endfor %}
+            </div>
+            {% endif %}
+            {% endwith %}
+
+            <!-- Decorative certificate icon -->
+            <img src="https://www.pngall.com/wp-content/uploads/5/Certificate-PNG-Image.png" alt="Certificate Icon" class="certifications-image">
+
+            <!-- Certifications table -->
+            <div class="table-container">
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>Certification Name</th>
+                            <th>Machines Covered</th>
+                            <th>Description</th>
+                            <th>Validity</th>
+                            <th>Issuing Authority</th>
+                            <th>Required For</th>
+                        </tr>
+                    </thead>
+                    <tbody id="certificationsTable">
+                        {% for cert in certifications %}
+                        <tr>
+                            <td>{{ cert[0] }}</td>
+                            <td>{{ cert[1] }}</td>
+                            <td>{{ cert[2] }}</td>
+                            <td>{{ cert[3] }}</td>
+                            <td>{{ cert[4] }}</td>
+                            <td>{{ cert[5] }}</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- Script for real-time table search/filtering -->
+    <script>
+        document.getElementById('searchInput').addEventListener('input', function(e) {
+            const searchTerm = e.target.value.toLowerCase();
+            const rows = document.querySelectorAll('#certificationsTable tr');
+
+            rows.forEach(row => {
+                const certName = row.cells[0].textContent.toLowerCase();
+                const machines = row.cells[1].textContent.toLowerCase();
+                const description = row.cells[2].textContent.toLowerCase();
+                const validity = row.cells[3].textContent.toLowerCase();
+                const issuingAuthority = row.cells[4].textContent.toLowerCase();
+                const requiredFor = row.cells[5].textContent.toLowerCase();
+
+                if (certName.includes(searchTerm) || machines.includes(searchTerm) ||
+                    description.includes(searchTerm) || validity.includes(searchTerm) ||
+                    issuingAuthority.includes(searchTerm) || requiredFor.includes(searchTerm)) {
+                    row.style.display = '';
+                } else {
+                    row.style.display = 'none';
+                }
+            });
+        });
+    </script>
+</body>
+</html>

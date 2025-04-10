@@ -1,0 +1,379 @@
+<! -- written by Nidhi -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <!-- Meta info for responsiveness and character encoding -->
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Approve Orders</title>
+
+    <!-- Google Fonts: Roboto -->
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
+
+    <!-- Font Awesome: for icons used in the interface -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css"/>
+
+    <style>
+        /* Reset and base styles */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Roboto', sans-serif;
+        }
+
+        /* Body background with coffee image and overlay */
+        body {
+            background: url("{{ url_for('static', filename='images/9629_Premium_Coffee-Location-58.webp') }}") no-repeat center center fixed;
+            background-size: cover;
+            min-height: 100vh;
+            position: relative;
+        }
+
+        /* Dark overlay for text contrast */
+        body::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.75);
+            z-index: 1;
+        }
+
+        /* Container for all content */
+        .orders-container {
+            position: relative;
+            z-index: 2;
+            padding: 20px;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* Header with title, search, and back link */
+        .orders-header {
+            background: #1a252f;
+            color: #d4af37;
+            padding: 20px;
+            border-bottom: 1px solid #d4af37;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+
+        /* Title style */
+        .orders-header h2 {
+            font-size: 26px;
+            font-weight: 400;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            letter-spacing: 1px;
+        }
+
+        /* Icon inside header */
+        .orders-header h2 i {
+            font-size: 28px;
+        }
+
+        /* Back navigation link */
+        .orders-header .nav-link {
+            color: #d4af37;
+            font-size: 14px;
+            font-weight: 300;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            transition: color 0.3s ease;
+        }
+
+        .orders-header .nav-link:hover {
+            color: #f0c14b;
+        }
+
+        /* Search bar styles */
+        .orders-header .search-bar {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .orders-header .search-bar input {
+            padding: 8px 12px;
+            border: 1px solid #d4af37;
+            background: #f9fafb;
+            outline: none;
+            font-size: 14px;
+            color: #1a252f;
+        }
+
+        .orders-header .search-bar button {
+            background: #d4af37;
+            color: #1a252f;
+            padding: 8px 12px;
+            border: none;
+            font-size: 14px;
+            transition: background 0.3s ease;
+        }
+
+        .orders-header .search-bar button:hover {
+            background: #f0c14b;
+        }
+
+        /* Content area under header */
+        .orders-content {
+            flex: 1;
+            padding: 30px;
+            max-width: 1200px;
+            margin: 0 auto;
+            width: 100%;
+        }
+
+        /* Table wrapper for scrollable content */
+        .table-container {
+            background: #fff;
+            border: 1px solid #d4af37;
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
+            overflow-x: auto;
+        }
+
+        /* Table styling */
+        .table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .table thead {
+            background: #1a252f;
+            color: #d4af37;
+        }
+
+        .table thead th {
+            padding: 15px;
+            font-weight: 500;
+            text-align: left;
+            border-bottom: 1px solid #d4af37;
+        }
+
+        .table tbody tr {
+            transition: background 0.3s ease;
+        }
+
+        .table tbody tr:hover {
+            background: #f9fafb;
+        }
+
+        .table tbody td {
+            padding: 15px;
+            border-bottom: 1px solid #e5e7eb;
+            color: #1a252f;
+        }
+
+        /* Approve button */
+        .btn-approve {
+            background: #28a745;
+            color: #fff;
+            padding: 8px 15px;
+            font-size: 14px;
+            font-weight: 500;
+            border: none;
+            margin-right: 5px;
+            transition: background 0.3s ease, transform 0.1s ease;
+        }
+
+        .btn-approve:hover {
+            background: #218838;
+            transform: translateY(-1px);
+        }
+
+        /* Reject button */
+        .btn-reject {
+            background: #dc3545;
+            color: #fff;
+            padding: 8px 15px;
+            font-size: 14px;
+            font-weight: 500;
+            border: none;
+            transition: background 0.3s ease, transform 0.1s ease;
+        }
+
+        .btn-reject:hover {
+            background: #c82333;
+            transform: translateY(-1px);
+        }
+
+        /* Flash message styling */
+        .flash-messages {
+            margin-bottom: 25px;
+        }
+
+        .flash-messages .alert {
+            background: #fefce8;
+            color: #854d0e;
+            border: 1px solid #fef08a;
+            padding: 12px;
+            margin-bottom: 10px;
+            text-align: center;
+            font-size: 14px;
+        }
+
+        .flash-messages .alert-success {
+            background: #ecfdf5;
+            color: #065f46;
+            border-color: #6ee7b7;
+        }
+
+        .flash-messages .alert-danger {
+            background: #fef2f2;
+            color: #991b1b;
+            border-color: #f87171;
+        }
+
+        /* Responsive tweaks for small screens */
+        @media (max-width: 768px) {
+            .orders-header {
+                padding: 15px;
+            }
+            .orders-header h2 {
+                font-size: 22px;
+            }
+            .orders-content {
+                padding: 20px;
+            }
+            .table thead th,
+            .table tbody td {
+                padding: 10px;
+                font-size: 14px;
+            }
+            .btn-approve,
+            .btn-reject {
+                padding: 6px 10px;
+                font-size: 12px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Main container for the approve orders page -->
+    <div class="orders-container">
+        <!-- Page header with title, search bar, and navigation -->
+        <div class="orders-header">
+            <h2><i class="fas fa-check-circle"></i> Approve Orders</h2>
+
+            <!-- Search form (client-side filtering) -->
+            <div class="search-bar">
+                <input type="text" placeholder="Search orders..." id="searchInput">
+                <button><i class="fas fa-search"></i></button>
+            </div>
+
+            <!-- Back to dashboard link -->
+            <a href="{{ url_for('dashboard') }}" class="nav-link"><i class="fas fa-arrow-left"></i> Back to Dashboard</a>
+        </div>
+
+        <!-- Main content area -->
+        <div class="orders-content">
+            <!-- Display flash messages -->
+            {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+            <div class="flash-messages">
+                {% for category, message in messages %}
+                <div class="alert alert-{{ category }}">{{ message }}</div>
+                {% endfor %}
+            </div>
+            {% endif %}
+            {% endwith %}
+
+            <!-- Orders Table -->
+            <div class="table-container">
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>Order ID</th>
+                            <th>Customer Name</th>
+                            <th>Email</th>
+                            <th>Product</th>
+                            <th>Quantity</th>
+                            <th>Status</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="ordersTable">
+                        <!-- Loop through each order -->
+                        {% for order in orders %}
+                        <tr>
+                            <td>{{ order[0] }}</td>
+                            <td>{{ order[1] }}</td>
+                            <td>{{ order[2] }}</td>
+                            <td>{{ order[3] }}</td>
+                            <td>{{ order[4] }}</td>
+                            <td>{{ order[5] }}</td>
+                            <td>
+                                <!-- Approve button: checks stock first via JS -->
+                                <button type="button" class="btn-approve" 
+                                    onclick="checkStockBeforeApprove('{{ order[0] }}', '{{ order[3] }}', '{{ order[4] }}')">Approve</button>
+
+                                <!-- Reject button: submits a POST request -->
+                                <form method="POST" action="{{ url_for('reject_order', order_id=order[0]) }}" style="display:inline;">
+                                    <button type="submit" class="btn-reject" onclick="return confirm('Are you sure?')">Reject</button>
+                                </form>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- Script for search functionality and stock checking -->
+    <script>
+        // Filters table rows based on search input
+        document.getElementById('searchInput').addEventListener('input', function(e) {
+            const searchTerm = e.target.value.toLowerCase();
+            const rows = document.querySelectorAll('#ordersTable tr');
+            rows.forEach(row => {
+                const orderId = row.cells[0].textContent.toLowerCase();
+                const customerName = row.cells[1].textContent.toLowerCase();
+                const email = row.cells[2].textContent.toLowerCase();
+                const product = row.cells[3].textContent.toLowerCase();
+                const status = row.cells[5].textContent.toLowerCase();
+                if (orderId.includes(searchTerm) || customerName.includes(searchTerm) || 
+                    email.includes(searchTerm) || product.includes(searchTerm) || status.includes(searchTerm)) {
+                    row.style.display = '';
+                } else {
+                    row.style.display = 'none';
+                }
+            });
+        });
+
+        // Checks stock before submitting approve order form
+        async function checkStockBeforeApprove(orderId, productName, orderQuantity) {
+            let response = await fetch(`/get_stock/${productName}`);
+            let data = await response.json();
+            let availableStock = data.stock;
+
+            if (availableStock === 0) {
+                alert(`❌ Cannot approve! ${productName} is out of stock.`);
+            } else if (availableStock < orderQuantity) {
+                alert(`⚠️ Warning: ${productName} only has ${availableStock} in stock. Order requires ${orderQuantity}. Consider restocking.`);
+            } else {
+                approveOrder(orderId);
+            }
+        }
+
+        // Submits the form to approve the order
+        function approveOrder(orderId) {
+            let form = document.createElement("form");
+            form.method = "POST";
+            form.action = `/approve_order/${orderId}`;
+            document.body.appendChild(form);
+            form.submit();
+        }
+    </script>
+</body>
+</html>

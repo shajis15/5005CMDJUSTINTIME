@@ -1,0 +1,289 @@
+<! -- written by Nidhi -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <!-- Meta configuration for character encoding and responsive design -->
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Register Production Operative</title>
+
+    <!-- Google Fonts: Roboto -->
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
+
+    <!-- Font Awesome: for icons used throughout the form -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css"/>
+
+    <style>
+        /* Reset and base styling for all elements */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Roboto', sans-serif;
+        }
+
+        /* Body background image and overall layout styling */
+        body {
+            background: url("{{ url_for('static', filename='images/Breakfast-in-Bed-POSTER.webp') }}");
+            background-size: cover;
+            background-position: center;
+            background-attachment: fixed;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+            position: relative;
+        }
+
+        /* Dark overlay effect on background image */
+        body::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.75);
+            z-index: 1;
+        }
+
+        /* Container for the registration form */
+        .register-container {
+            background: #fff;
+            width: 100%;
+            max-width: 450px;
+            border: 1px solid #d4af37;
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
+            position: relative;
+            z-index: 2;
+        }
+
+        /* Header section with title and back link */
+        .register-header {
+            background: #1a252f;
+            color: #d4af37;
+            padding: 20px;
+            text-align: center;
+            border-bottom: 1px solid #d4af37;
+        }
+
+        /* Title inside the header */
+        .register-header h2 {
+            font-size: 26px;
+            font-weight: 400;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            letter-spacing: 1px;
+        }
+
+        /* Icon styling inside the title */
+        .register-header h2 i {
+            font-size: 28px;
+        }
+
+        /* Back to dashboard link in header */
+        .register-header .nav-link {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            color: #d4af37;
+            font-size: 14px;
+            font-weight: 300;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            transition: color 0.3s ease;
+        }
+
+        /* Hover effect for the back link */
+        .register-header .nav-link:hover {
+            color: #f0c14b;
+        }
+
+        /* Padding for the form content */
+        .register-content {
+            padding: 40px;
+        }
+
+        /* Group wrapper for form inputs and labels */
+        .form-group {
+            margin-bottom: 25px;
+            position: relative;
+        }
+
+        /* Label styling */
+        .form-group label {
+            display: block;
+            font-size: 14px;
+            font-weight: 500;
+            color: #1a252f;
+            margin-bottom: 8px;
+            letter-spacing: 0.5px;
+        }
+
+        /* Input field styling */
+        .form-group input {
+            width: 100%;
+            padding: 12px 12px 12px 40px;
+            font-size: 15px;
+            border: 1px solid #d1d5db;
+            border-left: 3px solid #d4af37;
+            background: #f9fafb;
+            outline: none;
+            transition: border-color 0.3s ease;
+        }
+
+        /* Input field focus state */
+        .form-group input:focus {
+            border-color: #d4af37;
+            border-left-color: #d4af37;
+        }
+
+        /* Icon inside the input fields */
+        .form-group i {
+            position: absolute;
+            left: 12px;
+            top: 42px;
+            color: #d4af37;
+            font-size: 16px;
+        }
+
+        /* Submit button styling */
+        .btn-register {
+            background: #d4af37;
+            color: #1a252f;
+            padding: 12px;
+            font-size: 16px;
+            font-weight: 500;
+            border: none;
+            width: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            transition: background 0.3s ease, transform 0.1s ease;
+        }
+
+        /* Submit button hover effect */
+        .btn-register:hover {
+            background: #f0c14b;
+            transform: translateY(-1px);
+        }
+
+        /* Flash message container */
+        .flash-messages {
+            margin-bottom: 25px;
+        }
+
+        /* Default flash message styling */
+        .flash-messages .alert {
+            background: #fefce8;
+            color: #854d0e;
+            border: 1px solid #fef08a;
+            padding: 12px;
+            margin-bottom: 10px;
+            text-align: center;
+            font-size: 14px;
+        }
+
+        /* Success message styling */
+        .flash-messages .alert-success {
+            background: #ecfdf5;
+            color: #065f46;
+            border-color: #6ee7b7;
+        }
+
+        /* Error message styling */
+        .flash-messages .alert-danger {
+            background: #fef2f2;
+            color: #991b1b;
+            border-color: #f87171;
+        }
+
+        /* Responsive adjustments for smaller screens */
+        @media (max-width: 768px) {
+            .register-container {
+                max-width: 100%;
+            }
+            .register-header {
+                padding: 15px;
+            }
+            .register-header h2 {
+                font-size: 22px;
+            }
+            .register-content {
+                padding: 30px;
+            }
+            .form-group input {
+                padding: 10px 10px 10px 35px;
+            }
+            .form-group i {
+                top: 40px;
+                font-size: 14px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Main registration container -->
+    <div class="register-container">
+        <!-- Header with title and navigation -->
+        <div class="register-header">
+            <h2><i class="fas fa-user-tie"></i> Register Production Operative</h2>
+            <a href="{{ url_for('dashboard') }}" class="nav-link"><i class="fas fa-arrow-left"></i> Back to Dashboard</a>
+        </div>
+
+        <!-- Content section containing form and messages -->
+        <div class="register-content">
+            <!-- Flash messages (for success/error feedback) -->
+            {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+            <div class="flash-messages">
+                {% for category, message in messages %}
+                <div class="alert alert-{{ category }}">{{ message }}</div>
+                {% endfor %}
+            </div>
+            {% endif %}
+            {% endwith %}
+
+            <!-- Registration form (POST method) -->
+            <form method="POST">
+                <!-- Name input -->
+                <div class="form-group">
+                    <label for="name">Name</label>
+                    <i class="fas fa-user"></i>
+                    <input type="text" name="name" id="name" required>
+                </div>
+
+                <!-- Email input -->
+                <div class="form-group">
+                    <label for="email">Email</label>
+                    <i class="fas fa-envelope"></i>
+                    <input type="email" name="email" id="email" required>
+                </div>
+
+                <!-- Department input -->
+                <div class="form-group">
+                    <label for="department">Department</label>
+                    <i class="fas fa-building"></i>
+                    <input type="text" name="department" id="department" required>
+                </div>
+
+                <!-- Password input -->
+                <div class="form-group">
+                    <label for="password">Password</label>
+                    <i class="fas fa-lock"></i>
+                    <input type="password" name="password" id="password" required>
+                </div>
+
+                <!-- Submit button -->
+                <button type="submit" class="btn-register"><i class="fas fa-user-plus me-2"></i>Register Operative</button>
+            </form>
+        </div>
+    </div>
+</body>
+</html>

@@ -1,0 +1,383 @@
+<! -- written by harsh -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <!-- Meta tags for responsiveness and encoding -->
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Live Order Progress</title>
+
+    <!-- Google Font: Roboto -->
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
+
+    <!-- Font Awesome for icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css"/>
+
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+
+    <style>
+        /* General resets and base font */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Roboto', sans-serif;
+        }
+
+        /* Background image with dark overlay */
+        body {
+            background: url("{{ url_for('static', filename='images/9629_Premium_Coffee-Location-58.webp') }}") no-repeat center center fixed;
+            background-size: cover;
+            min-height: 100vh;
+            position: relative;
+        }
+
+        body::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.75);
+            z-index: 1;
+        }
+
+        /* Main container */
+        .order-progress-container {
+            position: relative;
+            z-index: 2;
+            padding: 20px;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* Header section */
+        .order-progress-header {
+            background: #1a252f;
+            color: #d4af37;
+            padding: 20px;
+            border-bottom: 1px solid #d4af37;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+
+        .order-progress-header h2 {
+            font-size: 26px;
+            font-weight: 400;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            letter-spacing: 1px;
+        }
+
+        .order-progress-header h2 i {
+            font-size: 28px;
+        }
+
+        /* Navigation link */
+        .order-progress-header .nav-link {
+            color: #d4af37;
+            font-size: 14px;
+            font-weight: 300;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            transition: color 0.3s ease;
+        }
+
+        .order-progress-header .nav-link:hover {
+            color: #f0c14b;
+        }
+
+        /* Search bar styles */
+        .order-progress-header .search-bar {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .order-progress-header .search-bar input {
+            padding: 8px 12px;
+            border: 1px solid #d4af37;
+            background: #f9fafb;
+            outline: none;
+            font-size: 14px;
+            color: #1a252f;
+        }
+
+        .order-progress-header .search-bar button {
+            background: #d4af37;
+            color: #1a252f;
+            padding: 8px 12px;
+            border: none;
+            font-size: 14px;
+            transition: background 0.3s ease;
+        }
+
+        .order-progress-header .search-bar button:hover {
+            background: #f0c14b;
+        }
+
+        /* Main content area */
+        .order-progress-content {
+            flex: 1;
+            padding: 30px;
+            max-width: 1200px;
+            margin: 0 auto;
+            width: 100%;
+        }
+
+        /* Decorative image styling */
+        .order-progress-image {
+            display: block;
+            max-width: 200px;
+            margin: 0 auto 20px;
+            border-radius: 10px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+        }
+
+        /* Table container */
+        .table-container {
+            background: #fff;
+            border: 1px solid #d4af37;
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
+            overflow-x: auto;
+        }
+
+        /* Table formatting */
+        .table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .table thead {
+            background: #1a252f;
+            color: #d4af37;
+        }
+
+        .table thead th {
+            padding: 15px;
+            font-weight: 500;
+            text-align: left;
+            border-bottom: 1px solid #d4af37;
+        }
+
+        .table tbody tr {
+            transition: background 0.3s ease;
+        }
+
+        .table tbody tr:hover {
+            background: #f9fafb;
+        }
+
+        .table tbody td {
+            padding: 15px;
+            border-bottom: 1px solid #e5e7eb;
+            color: #1a252f;
+        }
+
+        /* Badge styles for status display */
+        .status-badge {
+            padding: 5px 10px;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: 500;
+            color: #fff;
+        }
+
+        /* Status colors */
+        .status-completed { background: #28a745; }
+        .status-in-progress { background: #d4af37; }
+        .status-pending { background: #dc3545; }
+        .status-not-assigned { background: #6c757d; }
+
+        /* Flash message styling */
+        .flash-messages {
+            margin-bottom: 25px;
+        }
+
+        .flash-messages .alert {
+            background: #fefce8;
+            color: #854d0e;
+            border: 1px solid #fef08a;
+            padding: 12px;
+            margin-bottom: 10px;
+            text-align: center;
+            font-size: 14px;
+        }
+
+        .flash-messages .alert-success {
+            background: #ecfdf5;
+            color: #065f46;
+            border-color: #6ee7b7;
+        }
+
+        .flash-messages .alert-danger {
+            background: #fef2f2;
+            color: #991b1b;
+            border-color: #f87171;
+        }
+
+        /* Responsive adjustments */
+        @media (max-width: 768px) {
+            .order-progress-header {
+                padding: 15px;
+            }
+            .order-progress-header h2 {
+                font-size: 22px;
+            }
+            .order-progress-content {
+                padding: 20px;
+            }
+            .order-progress-image {
+                max-width: 150px;
+            }
+            .table thead th,
+            .table tbody td {
+                padding: 10px;
+                font-size: 14px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Main container -->
+    <div class="order-progress-container">
+        <!-- Header with title, search, and back link -->
+        <div class="order-progress-header">
+            <h2><i class="fas fa-tachometer-alt"></i> Live Order Progress</h2>
+            <div class="search-bar">
+                <input type="text" placeholder="Search orders..." id="searchInput">
+                <button><i class="fas fa-search"></i></button>
+            </div>
+            <a href="{{ url_for('dashboard') }}" class="nav-link"><i class="fas fa-arrow-left"></i> Back to Dashboard</a>
+        </div>
+
+        <!-- Flash messages -->
+        <div class="order-progress-content">
+            {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+            <div class="flash-messages">
+                {% for category, message in messages %}
+                <div class="alert alert-{{ category }}">{{ message }}</div>
+                {% endfor %}
+            </div>
+            {% endif %}
+            {% endwith %}
+
+            <!-- Order progress table -->
+            <div class="table-container">
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>Order ID</th>
+                            <th>Customer</th>
+                            <th>Product</th>
+                            <th>Quantity</th>
+                            <th>Stamper</th>
+                            <th>Operative</th>
+                            <th>Stamper Status</th>
+                            <th>Operative Status</th>
+                            <th>Overall Status</th>
+                        </tr>
+                    </thead>
+                    <tbody id="live-order-table">
+                        <!-- Placeholder row while loading -->
+                        <tr>
+                            <td colspan="9" class="text-center">Loading orders...</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- JavaScript for dynamic table population and search filtering -->
+    <script>
+        // Fetch orders from server
+        async function fetchLiveOrders() {
+            try {
+                let response = await fetch('/live_order_progress');
+                let data = await response.json();
+                let tableBody = document.getElementById("live-order-table");
+
+                // Show message if no orders found
+                if (data.orders.length === 0) {
+                    tableBody.innerHTML = `<tr><td colspan="9" class="text-center">No active orders.</td></tr>`;
+                    return;
+                }
+
+                tableBody.innerHTML = ""; // Clear old content
+
+                data.orders.forEach(order => {
+                    // Assign badge classes based on status
+                    const stamperStatus = (order[6] || 'Pending').toLowerCase();
+                    const operativeStatus = (order[7] || 'Pending').toLowerCase();
+                    const overallStatus = order[8].toLowerCase();
+
+                    const stamperClass = stamperStatus === 'completed' ? 'status-completed' :
+                                        stamperStatus === 'in progress' ? 'status-in-progress' : 'status-pending';
+
+                    const operativeClass = operativeStatus === 'completed' ? 'status-completed' :
+                                          operativeStatus === 'in progress' ? 'status-in-progress' : 'status-pending';
+
+                    const overallClass = overallStatus === 'completed' ? 'status-completed' :
+                                        overallStatus === 'in progress' ? 'status-in-progress' : 'status-pending';
+
+                    const stamperValue = order[4] ? (order[4] === 'Not Assigned' ? 'status-not-assigned' : '') : 'status-not-assigned';
+                    const operativeValue = order[5] ? (order[5] === 'Not Assigned' ? 'status-not-assigned' : '') : 'status-not-assigned';
+
+                    // Append row to table
+                    let row = `
+                        <tr>
+                            <td>${order[0]}</td>
+                            <td>${order[1]}</td>
+                            <td>${order[2]}</td>
+                            <td>${order[3]}</td>
+                            <td><span class="${stamperValue}">${order[4] || 'Not Assigned'}</span></td>
+                            <td><span class="${operativeValue}">${order[5] || 'Not Assigned'}</span></td>
+                            <td><span class="status-badge ${stamperClass}">${order[6] || 'Pending'}</span></td>
+                            <td><span class="status-badge ${operativeClass}">${order[7] || 'Pending'}</span></td>
+                            <td><span class="status-badge ${overallClass}">${order[8]}</span></td>
+                        </tr>
+                    `;
+                    tableBody.innerHTML += row;
+                });
+
+                // Re-filter after update
+                const searchInput = document.getElementById('searchInput').value.toLowerCase();
+                filterOrders(searchInput);
+            } catch (error) {
+                console.error('Error fetching live orders:', error);
+                let tableBody = document.getElementById("live-order-table");
+                tableBody.innerHTML = `<tr><td colspan="9" class="text-center">Error loading orders. Please try again later.</td></tr>`;
+            }
+        }
+
+        // Filters table based on input
+        function filterOrders(searchTerm) {
+            const rows = document.querySelectorAll('#live-order-table tr');
+            rows.forEach(row => {
+                const text = Array.from(row.cells).map(cell => cell.textContent.toLowerCase()).join(' ');
+                row.style.display = text.includes(searchTerm) ? '' : 'none';
+            });
+        }
+
+        // Attach search listener
+        document.getElementById('searchInput').addEventListener('input', function(e) {
+            filterOrders(e.target.value.toLowerCase());
+        });
+
+        // Refresh order data every 5 seconds
+        setInterval(fetchLiveOrders, 5000);
+        fetchLiveOrders(); // Initial fetch
+    </script>
+</body>
+</html>

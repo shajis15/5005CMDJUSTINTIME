@@ -1,0 +1,269 @@
+<! -- written by Nidhi -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <!-- Basic Meta Tags -->
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Production Operative Login</title>
+
+    <!-- Google Font: Roboto for clean UI typography -->
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
+
+    <!-- Font Awesome: Icon library -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css"/>
+
+    <style>
+        /* Reset default styles and set base font */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Roboto', sans-serif;
+        }
+
+        /* Body styling with background image */
+        body {
+            background: url("{{ url_for('static', filename='images/Breakfast-in-Bed-POSTER.webp') }}");
+            background-size: cover;
+            background-position: center;
+            background-attachment: fixed;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+            position: relative;
+        }
+
+        /* Dark overlay for better text contrast */
+        body::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.75);
+            z-index: 1;
+        }
+
+        /* Login container box */
+        .login-container {
+            background: #fff;
+            width: 100%;
+            max-width: 450px;
+            border: 1px solid #d4af37;
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
+            position: relative;
+            z-index: 2;
+        }
+
+        /* Header of the login box */
+        .login-header {
+            background: #1a252f;
+            color: #d4af37;
+            padding: 20px;
+            text-align: center;
+            border-bottom: 1px solid #d4af37;
+        }
+
+        /* Title text styling */
+        .login-header h2 {
+            font-size: 26px;
+            font-weight: 400;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            letter-spacing: 1px;
+        }
+
+        /* Login icon size */
+        .login-header h2 i {
+            font-size: 28px;
+        }
+
+        /* Back navigation link */
+        .login-header .nav-link {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            color: #d4af37;
+            font-size: 14px;
+            font-weight: 300;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            transition: color 0.3s ease;
+        }
+
+        /* Hover effect for back link */
+        .login-header .nav-link:hover {
+            color: #f0c14b;
+        }
+
+        /* Padding inside the form area */
+        .login-content {
+            padding: 40px;
+        }
+
+        /* Wrapper for each input group */
+        .form-group {
+            margin-bottom: 25px;
+            position: relative;
+        }
+
+        /* Label above each input */
+        .form-group label {
+            display: block;
+            font-size: 14px;
+            font-weight: 500;
+            color: #1a252f;
+            margin-bottom: 8px;
+            letter-spacing: 0.5px;
+        }
+
+        /* Input field style */
+        .form-group input {
+            width: 100%;
+            padding: 12px 12px 12px 40px;
+            font-size: 15px;
+            border: 1px solid #d1d5db;
+            border-left: 3px solid #d4af37;
+            background: #f9fafb;
+            outline: none;
+            transition: border-color 0.3s ease;
+        }
+
+        /* Highlight on input focus */
+        .form-group input:focus {
+            border-color: #d4af37;
+            border-left-color: #d4af37;
+        }
+
+        /* Icon inside input field */
+        .form-group i {
+            position: absolute;
+            left: 12px;
+            top: 42px;
+            color: #d4af37;
+            font-size: 16px;
+        }
+
+        /* Login button style */
+        .btn-login {
+            background: #d4af37;
+            color: #1a252f;
+            padding: 12px;
+            font-size: 16px;
+            font-weight: 500;
+            border: none;
+            width: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            transition: background 0.3s ease, transform 0.1s ease;
+        }
+
+        /* Button hover effect */
+        .btn-login:hover {
+            background: #f0c14b;
+            transform: translateY(-1px);
+        }
+
+        /* Flash message container */
+        .flash-messages {
+            margin-bottom: 25px;
+        }
+
+        /* Default flash alert styling */
+        .flash-messages .alert {
+            background: #fefce8;
+            color: #854d0e;
+            border: 1px solid #fef08a;
+            padding: 12px;
+            margin-bottom: 10px;
+            text-align: center;
+            font-size: 14px;
+        }
+
+        /* Success message */
+        .flash-messages .alert-success {
+            background: #ecfdf5;
+            color: #065f46;
+            border-color: #6ee7b7;
+        }
+
+        /* Error message */
+        .flash-messages .alert-danger {
+            background: #fef2f2;
+            color: #991b1b;
+            border-color: #f87171;
+        }
+
+        /* Responsive tweaks for smaller screens */
+        @media (max-width: 768px) {
+            .login-container {
+                max-width: 100%;
+            }
+            .login-header {
+                padding: 15px;
+            }
+            .login-header h2 {
+                font-size: 22px;
+            }
+            .login-content {
+                padding: 30px;
+            }
+            .form-group input {
+                padding: 10px 10px 10px 35px;
+            }
+            .form-group i {
+                top: 40px;
+                font-size: 14px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Login form wrapper -->
+    <div class="login-container">
+        <!-- Header section with title and back button -->
+        <div class="login-header">
+            <h2><i class="fas fa-sign-in-alt"></i> Production Operative Login</h2>
+            <a href="{{ url_for('login') }}" class="nav-link"><i class="fas fa-arrow-left"></i> Main Login</a>
+        </div>
+
+        <div class="login-content">
+            <!-- Display flash messages if any (e.g. login error, success) -->
+            {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+            <div class="flash-messages">
+                {% for category, message in messages %}
+                <div class="alert alert-{{ category }}">{{ message }}</div>
+                {% endfor %}
+            </div>
+            {% endif %}
+            {% endwith %}
+
+            <!-- Login form (email and password fields) -->
+            <form method="POST">
+                <div class="form-group">
+                    <label for="email">Email</label>
+                    <i class="fas fa-envelope"></i>
+                    <input type="email" name="email" id="email" required>
+                </div>
+                <div class="form-group">
+                    <label for="password">Password</label>
+                    <i class="fas fa-lock"></i>
+                    <input type="password" name="password" id="password" required>
+                </div>
+                <button type="submit" class="btn-login"><i class="fas fa-sign-in-alt me-2"></i>Login</button>
+            </form>
+        </div>
+    </div>
+</body>
+</html>

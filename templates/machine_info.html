@@ -1,0 +1,333 @@
+<! -- written by Nidhi -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Machines & Information</title>
+    <!-- Google Fonts (Roboto) -->
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <!-- Font Awesome for Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css"/>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Roboto', sans-serif;
+        }
+        body {
+            background: url("{{ url_for('static', filename='images/9629_Premium_Coffee-Location-58.webp') }}") no-repeat center center fixed;
+            background-size: cover;
+            min-height: 100vh;
+            position: relative;
+        }
+        body::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.75);
+            z-index: 1;
+        }
+        .machines-container {
+            position: relative;
+            z-index: 2;
+            padding: 20px;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+        .machines-header {
+            background: #1a252f;
+            color: #d4af37;
+            padding: 20px;
+            border-bottom: 1px solid #d4af37;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+        .machines-header h2 {
+            font-size: 26px;
+            font-weight: 400;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            letter-spacing: 1px;
+        }
+        .machines-header h2 i {
+            font-size: 28px;
+        }
+        .machines-header .nav-link {
+            color: #d4af37;
+            font-size: 14px;
+            font-weight: 300;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            transition: color 0.3s ease;
+        }
+        .machines-header .nav-link:hover {
+            color: #f0c14b;
+        }
+        .machines-header .search-bar {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .machines-header .search-bar input {
+            padding: 8px 12px;
+            border: 1px solid #d4af37;
+            background: #f9fafb;
+            outline: none;
+            font-size: 14px;
+            color: #1a252f;
+        }
+        .machines-header .search-bar button {
+            background: #d4af37;
+            color: #1a252f;
+            padding: 8px 12px;
+            border: none;
+            font-size: 14px;
+            transition: background 0.3s ease;
+        }
+        .machines-header .search-bar button:hover {
+            background: #f0c14b;
+        }
+        .machines-content {
+            flex: 1;
+            padding: 30px;
+            max-width: 1200px;
+            margin: 0 auto;
+            width: 100%;
+        }
+        .machine-card {
+            position: relative;
+            background: #fff;
+            border: 1px solid #d4af37;
+            border-radius: 10px;
+            overflow: hidden;
+            margin-bottom: 30px;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+        }
+        .machine-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
+        }
+        .machine-card .image-container {
+            position: relative;
+            width: 100%;
+            height: 200px;
+        }
+        .machine-card .image-container img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        .machine-card .image-container::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 1;
+        }
+        .machine-card .image-container h4 {
+            position: absolute;
+            bottom: 15px;
+            left: 15px;
+            color: #fff;
+            font-size: 20px;
+            font-weight: 500;
+            z-index: 2;
+            margin: 0;
+            text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.5);
+        }
+        .machine-card .card-content {
+            padding: 20px;
+            flex: 1;
+        }
+        .machine-card p {
+            font-size: 14px;
+            color: #1a252f;
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .machine-card p i {
+            color: #d4af37;
+        }
+        .machine-card p strong {
+            color: #d4af37;
+        }
+        .flash-messages {
+            margin-bottom: 25px;
+        }
+        .flash-messages .alert {
+            background: #fefce8;
+            color: #854d0e;
+            border: 1px solid #fef08a;
+            padding: 12px;
+            margin-bottom: 10px;
+            text-align: center;
+            font-size: 14px;
+        }
+        .flash-messages .alert-success {
+            background: #ecfdf5;
+            color: #065f46;
+            border-color: #6ee7b7;
+        }
+        .flash-messages .alert-danger {
+            background: #fef2f2;
+            color: #991b1b;
+            border-color: #f87171;
+        }
+        @media (max-width: 768px) {
+            .machines-header {
+                padding: 15px;
+            }
+            .machines-header h2 {
+                font-size: 22px;
+            }
+            .machines-content {
+                padding: 20px;
+            }
+            .machine-card .image-container {
+                height: 150px;
+            }
+            .machine-card .image-container h4 {
+                font-size: 18px;
+                bottom: 10px;
+                left: 10px;
+            }
+            .machine-card .card-content {
+                padding: 15px;
+            }
+            .machine-card p {
+                font-size: 12px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="machines-container">
+        <div class="machines-header">
+            <h2><i class="fas fa-industry"></i> Machines & Information</h2>
+            <div class="search-bar">
+                <input type="text" placeholder="Search machines..." id="searchInput">
+                <button><i class="fas fa-search"></i></button>
+            </div>
+            <a href="{{ url_for('dashboard') }}" class="nav-link"><i class="fas fa-arrow-left"></i> Back to Dashboard</a>
+        </div>
+
+        <div class="machines-content">
+            <!-- Flash Messages -->
+            {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+            <div class="flash-messages">
+                {% for category, message in messages %}
+                <div class="alert alert-{{ category }}">{{ message }}</div>
+                {% endfor %}
+            </div>
+            {% endif %}
+            {% endwith %}
+
+            <!-- Machine Cards -->
+            <div class="row" id="machinesRow">
+                {% for machine in machines %}
+                <div class="col-lg-4 col-md-6 machine-card-col">
+                    <div class="machine-card">
+                        <div class="image-container">
+                            <img class="machine-image" alt="{{ machine[0] }}" onerror="this.onerror=null; this.src='https://via.placeholder.com/300';">
+                            <h4>{{ machine[0] }}</h4>
+                        </div>
+                        <div class="card-content">
+                            <p><i class="fas fa-cogs"></i> <strong>Work:</strong> {{ machine[2] }}</p>
+                            <p><i class="fas fa-certificate"></i> <strong>Required Certification:</strong> {{ machine[3] }}</p>
+                            <p><i class="fas fa-clock"></i> <strong>Working Hours:</strong> {{ machine[4] }}</p>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // List of machine images
+        const machineImages = [
+            "{{ url_for('static', filename='images/factory machines/pexels-ardamez-12733.jpg') }}",
+            "{{ url_for('static', filename='images/factory machines/pexels-cmrcn-29224625.jpg') }}",
+            "{{ url_for('static', filename='images/factory machines/pexels-cmrcn-29988963.jpg') }}",
+            "{{ url_for('static', filename='images/factory machines/pexels-cmrcn-29988967.jpg') }}",
+            "{{ url_for('static', filename='images/factory machines/pexels-cottonbro-5532835.jpg') }}",
+            "{{ url_for('static', filename='images/factory machines/pexels-cottonbro-7480241.jpg') }}",
+            "{{ url_for('static', filename='images/factory machines/pexels-cottonbro-7492889.jpg') }}",
+            "{{ url_for('static', filename='images/factory machines/pexels-harrisonhaines-9957864.jpg') }}",
+            "{{ url_for('static', filename='images/factory machines/pexels-hoang-nc-483165236-19544232.jpg') }}",
+            "{{ url_for('static', filename='images/factory machines/pexels-hoang-nc-483165236-19544248.jpg') }}",
+            "{{ url_for('static', filename='images/factory machines/pexels-kateryna-babaieva-1423213-2880872.jpg') }}",
+            "{{ url_for('static', filename='images/factory machines/pexels-mikhail-nilov-9242907.jpg') }}",
+            "{{ url_for('static', filename='images/factory machines/pexels-mographe-15360457.jpg') }}",
+            "{{ url_for('static', filename='images/factory machines/pexels-nc-farm-bureau-mark-2889347.jpg') }}",
+            "{{ url_for('static', filename='images/factory machines/pexels-nc-farm-bureau-mark-5876444 (1).jpg') }}",
+            "{{ url_for('static', filename='images/factory machines/pexels-odaksan-4224964.jpg') }}",
+            "{{ url_for('static', filename='images/factory machines/pexels-rolledalloys-metal-supply-10664009.jpg') }}",
+            "{{ url_for('static', filename='images/factory machines/pexels-shkrabaanthony-6620970.jpg') }}",
+            "{{ url_for('static', filename='images/factory machines/pexels-shvetsa-5710875.jpg') }}",
+            "{{ url_for('static', filename='images/factory machines/pexels-soner-mazlum-182555-6890325.jpg') }}",
+            "{{ url_for('static', filename='images/factory machines/pexels-tima-miroshnichenko-6754840.jpg') }}",
+            "{{ url_for('static', filename='images/factory machines/pexels-tima-miroshnichenko-9574395.jpg') }}",
+            "{{ url_for('static', filename='images/factory machines/pexels-yaroslav-shuraev-4889104.jpg') }}"
+        ];
+
+        // Function to shuffle array (Fisher-Yates shuffle)
+        function shuffleArray(array) {
+            for (let i = array.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [array[i], array[j]] = [array[j], array[i]];
+            }
+            return array;
+        }
+
+        // Assign random images to machine cards
+        document.addEventListener('DOMContentLoaded', function() {
+            const shuffledImages = shuffleArray([...machineImages]);
+            const machineImagesElements = document.querySelectorAll('.machine-image');
+            machineImagesElements.forEach((img, index) => {
+                img.src = shuffledImages[index % shuffledImages.length];
+            });
+        });
+
+        // Search functionality for machine cards
+        document.getElementById('searchInput').addEventListener('input', function(e) {
+            const searchTerm = e.target.value.toLowerCase();
+            const machineCards = document.querySelectorAll('.machine-card-col');
+            machineCards.forEach(card => {
+                const name = card.querySelector('h4').textContent.toLowerCase();
+                const work = card.querySelector('p:nth-child(1)').textContent.toLowerCase();
+                const certification = card.querySelector('p:nth-child(2)').textContent.toLowerCase();
+                const hours = card.querySelector('p:nth-child(3)').textContent.toLowerCase();
+                if (name.includes(searchTerm) || work.includes(searchTerm) || 
+                    certification.includes(searchTerm) || hours.includes(searchTerm)) {
+                    card.style.display = '';
+                } else {
+                    card.style.display = 'none';
+                }
+            });
+        });
+    </script>
+</body>
+</html>

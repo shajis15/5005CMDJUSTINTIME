@@ -1,0 +1,371 @@
+<! -- written by Rajshree -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>User Management</title>
+    <!-- Google Fonts (Roboto) -->
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <!-- Font Awesome for Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css"/>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Roboto', sans-serif;
+        }
+        body {
+            background: url("{{ url_for('static', filename='images/9629_Premium_Coffee-Location-58.webp') }}") no-repeat center center fixed;
+            background-size: cover;
+            min-height: 100vh;
+            position: relative;
+        }
+        body::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.75);
+            z-index: 1;
+        }
+        .management-container {
+            position: relative;
+            z-index: 2;
+            padding: 20px;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+        .management-header {
+            background: #1a252f;
+            color: #d4af37;
+            padding: 20px;
+            border-bottom: 1px solid #d4af37;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+        .management-header h2 {
+            font-size: 26px;
+            font-weight: 400;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            letter-spacing: 1px;
+        }
+        .management-header h2 i {
+            font-size: 28px;
+        }
+        .management-header .nav-link {
+            color: #d4af37;
+            font-size: 14px;
+            font-weight: 300;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            transition: color 0.3s ease;
+        }
+        .management-header .nav-link:hover {
+            color: #f0c14b;
+        }
+        .management-header .search-bar {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .management-header .search-bar input {
+            padding: 8px 12px;
+            border: 1px solid #d4af37;
+            background: #f9fafb;
+            outline: none;
+            font-size: 14px;
+            color: #1a252f;
+        }
+        .management-header .search-bar button {
+            background: #d4af37;
+            color: #1a252f;
+            padding: 8px 12px;
+            border: none;
+            font-size: 14px;
+            transition: background 0.3s ease;
+        }
+        .management-header .search-bar button:hover {
+            background: #f0c14b;
+        }
+        .management-content {
+            flex: 1;
+            padding: 30px;
+            max-width: 1200px;
+            margin: 0 auto;
+            width: 100%;
+        }
+        .section-title {
+            font-size: 22px;
+            font-weight: 500;
+            color: #d4af37;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .table-container {
+            background: #fff;
+            border: 1px solid #d4af37;
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
+            overflow-x: auto;
+            margin-bottom: 40px;
+        }
+        .table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 0;
+        }
+        .table thead {
+            background: #1a252f;
+            color: #d4af37;
+        }
+        .table thead th {
+            padding: 15px;
+            font-weight: 500;
+            text-align: left;
+            border-bottom: 1px solid #d4af37;
+        }
+        .table tbody tr {
+            transition: background 0.3s ease;
+        }
+        .table tbody tr:hover {
+            background: #f9fafb;
+        }
+        .table tbody td {
+            padding: 15px;
+            border-bottom: 1px solid #e5e7eb;
+            color: #1a252f;
+        }
+        .btn-edit {
+            background: #d4af37;
+            color: #1a252f;
+            padding: 8px 15px;
+            font-size: 14px;
+            font-weight: 500;
+            border: none;
+            margin-right: 5px;
+            transition: background 0.3s ease, transform 0.1s ease;
+        }
+        .btn-edit:hover {
+            background: #f0c14b;
+            transform: translateY(-1px);
+        }
+        .btn-delete {
+            background: #dc3545;
+            color: #fff;
+            padding: 8px 15px;
+            font-size: 14px;
+            font-weight: 500;
+            border: none;
+            transition: background 0.3s ease, transform 0.1s ease;
+        }
+        .btn-delete:hover {
+            background: #c82333;
+            transform: translateY(-1px);
+        }
+        .flash-messages {
+            margin-bottom: 25px;
+        }
+        .flash-messages .alert {
+            background: #fefce8;
+            color: #854d0e;
+            border: 1px solid #fef08a;
+            padding: 12px;
+            margin-bottom: 10px;
+            text-align: center;
+            font-size: 14px;
+        }
+        .flash-messages .alert-success {
+            background: #ecfdf5;
+            color: #065f46;
+            border-color: #6ee7b7;
+        }
+        .flash-messages .alert-danger {
+            background: #fef2f2;
+            color: #991b1b;
+            border-color: #f87171;
+        }
+        @media (max-width: 768px) {
+            .management-header {
+                padding: 15px;
+            }
+            .management-header h2 {
+                font-size: 22px;
+            }
+            .management-content {
+                padding: 20px;
+            }
+            .section-title {
+                font-size: 20px;
+            }
+            .table thead th,
+            .table tbody td {
+                padding: 10px;
+                font-size: 14px;
+            }
+            .btn-edit,
+            .btn-delete {
+                padding: 6px 10px;
+                font-size: 12px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="management-container">
+        <div class="management-header">
+            <h2><i class="fas fa-users"></i> User Management</h2>
+            <div class="search-bar">
+                <input type="text" placeholder="Search users..." id="searchInput">
+                <button><i class="fas fa-search"></i></button>
+            </div>
+            <a href="{{ url_for('dashboard') }}" class="nav-link"><i class="fas fa-arrow-left"></i> Back to Dashboard</a>
+        </div>
+
+        <div class="management-content">
+            <!-- Flash Messages -->
+            {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+            <div class="flash-messages">
+                {% for category, message in messages %}
+                <div class="alert alert-{{ category }}">{{ message }}</div>
+                {% endfor %}
+            </div>
+            {% endif %}
+            {% endwith %}
+
+            <!-- Main Users Table -->
+            <h4 class="section-title"><i class="fas fa-user-shield"></i> Main Registered Users (Admins & Managers)</h4>
+            <div class="table-container">
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Name</th>
+                            <th>Email</th>
+                            <th>Role</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="mainUsersTable">
+                        {% for user in users %}
+                        <tr>
+                            <td>{{ user[0] }}</td>
+                            <td>{{ user[1] }}</td>
+                            <td>{{ user[2] }}</td>
+                            <td>{{ user[3] }}</td>
+                            <td>
+                                <a href="{{ url_for('edit_user', user_id=user[0]) }}" class="btn-edit">Edit</a>
+                                <a href="{{ url_for('delete_user', user_id=user[0]) }}" class="btn-delete" onclick="return confirm('Are you sure?')">Delete</a>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- Stampers Table -->
+            <h4 class="section-title"><i class="fas fa-user-tie"></i> Registered Stampers</h4>
+            <div class="table-container">
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Name</th>
+                            <th>Email</th>
+                            <th>Certification</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="stampersTable">
+                        {% for stamper in stampers %}
+                        <tr>
+                            <td>{{ stamper[0] }}</td>
+                            <td>{{ stamper[1] }}</td>
+                            <td>{{ stamper[2] }}</td>
+                            <td>{{ stamper[3] }}</td>
+                            <td>
+                                <a href="{{ url_for('edit_stamper', stamper_id=stamper[0]) }}" class="btn-edit">Edit</a>
+                                <form method="POST" action="{{ url_for('delete_stamper', stamper_id=stamper[0]) }}" style="display:inline;">
+                                    <button type="submit" class="btn-delete" onclick="return confirm('Are you sure?')">Delete</button>
+                                </form>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- Production Operatives Table -->
+            <h4 class="section-title"><i class="fas fa-user-tie"></i> Registered Production Operatives</h4>
+            <div class="table-container">
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Name</th>
+                            <th>Email</th>
+                            <th>Certification</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="operativesTable">
+                        {% for operative in operatives %}
+                        <tr>
+                            <td>{{ operative[0] }}</td>
+                            <td>{{ operative[1] }}</td>
+                            <td>{{ operative[2] }}</td>
+                            <td>{{ operative[3] }}</td>
+                            <td>
+                                <a href="{{ url_for('edit_operative', operative_id=operative[0]) }}" class="btn-edit">Edit</a>
+                                <form method="POST" action="{{ url_for('delete_operative', operative_id=operative[0]) }}" style="display:inline;">
+                                    <button type="submit" class="btn-delete" onclick="return confirm('Are you sure?')">Delete</button>
+                                </form>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Search functionality for all tables
+        document.getElementById('searchInput').addEventListener('input', function(e) {
+            const searchTerm = e.target.value.toLowerCase();
+            const tables = [
+                { id: 'mainUsersTable', columns: [1, 2, 3] }, // Name, Email, Role
+                { id: 'stampersTable', columns: [1, 2, 3] },   // Name, Email, Certification
+                { id: 'operativesTable', columns: [1, 2, 3] }  // Name, Email, Certification
+            ];
+
+            tables.forEach(table => {
+                const rows = document.querySelectorAll(`#${table.id} tr`);
+                rows.forEach(row => {
+                    let match = false;
+                    table.columns.forEach(colIndex => {
+                        const cellText = row.cells[colIndex].textContent.toLowerCase();
+                        if (cellText.includes(searchTerm)) {
+                            match = true;
+                        }
+                    });
+                    row.style.display = match ? '' : 'none';
+                });
+            });
+        });
+    </script>
+</body>
+</html>

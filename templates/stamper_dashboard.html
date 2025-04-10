@@ -1,0 +1,274 @@
+<-- written by shani>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Stamper Dashboard</title>
+    <!-- Google Fonts (Roboto) -->
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <!-- Font Awesome for Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css"/>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Roboto', sans-serif;
+        }
+        body {
+            background: url("{{ url_for('static', filename='images/S4011_LS1-s4011.webp') }}");
+            background-size: cover;
+            background-position: center;
+            background-attachment: fixed;
+            min-height: 100vh;
+            position: relative;
+        }
+        body::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.75);
+            z-index: 1;
+        }
+        .dashboard-container {
+            position: relative;
+            z-index: 2;
+            padding: 20px;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+        .dashboard-header {
+            background: #1e3a8a;
+            color: #c0c0c0;
+            padding: 20px;
+            border-bottom: 1px solid #c0c0c0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+        .dashboard-header h2 {
+            font-size: 26px;
+            font-weight: 400;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            letter-spacing: 1px;
+        }
+        .dashboard-header h2 i {
+            font-size: 28px;
+        }
+        .dashboard-header .nav-link {
+            color: #c0c0c0;
+            font-size: 14px;
+            font-weight: 300;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            transition: color 0.3s ease;
+        }
+        .dashboard-header .nav-link:hover {
+            color: #e5e5e5;
+        }
+        .dashboard-content {
+            flex: 1;
+            padding: 30px;
+            max-width: 1200px;
+            margin: 0 auto;
+            width: 100%;
+        }
+        .welcome-message {
+            background: #f9fafb;
+            border: 1px solid #c0c0c0;
+            padding: 15px;
+            margin-bottom: 20px;
+            text-align: center;
+            font-size: 16px;
+            color: #1e3a8a;
+        }
+        .table-container {
+            background: #fff;
+            border: 1px solid #c0c0c0;
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
+            overflow-x: auto;
+        }
+        .table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 0;
+        }
+        .table thead {
+            background: #1e3a8a;
+            color: #c0c0c0;
+        }
+        .table thead th {
+            padding: 15px;
+            font-weight: 500;
+            text-align: left;
+            border-bottom: 1px solid #c0c0c0;
+        }
+        .table tbody tr {
+            transition: background 0.3s ease;
+        }
+        .table tbody tr:hover {
+            background: #f9fafb;
+        }
+        .table tbody td {
+            padding: 15px;
+            border-bottom: 1px solid #e5e7eb;
+            color: #1e3a8a;
+        }
+        .table tbody td form {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+        }
+        .table tbody td select {
+            padding: 8px;
+            border: 1px solid #d1d5db;
+            border-left: 3px solid #c0c0c0;
+            background: #f9fafb;
+            outline: none;
+            transition: border-color 0.3s ease;
+            font-size: 14px;
+        }
+        .table tbody td select:focus {
+            border-color: #c0c0c0;
+            border-left-color: #c0c0c0;
+        }
+        .btn-update {
+            background: #c0c0c0;
+            color: #1e3a8a;
+            padding: 8px 15px;
+            font-size: 14px;
+            font-weight: 500;
+            border: none;
+            transition: background 0.3s ease, transform 0.1s ease;
+        }
+        .btn-update:hover {
+            background: #e5e5e5;
+            transform: translateY(-1px);
+        }
+        .flash-messages {
+            margin-bottom: 25px;
+        }
+        .flash-messages .alert {
+            background: #fefce8;
+            color: #854d0e;
+            border: 1px solid #fef08a;
+            padding: 12px;
+            margin-bottom: 10px;
+            text-align: center;
+            font-size: 14px;
+        }
+        .flash-messages .alert-success {
+            background: #ecfdf5;
+            color: #065f46;
+            border-color: #6ee7b7;
+        }
+        .flash-messages .alert-danger {
+            background: #fef2f2;
+            color: #991b1b;
+            border-color: #f87171;
+        }
+        @media (max-width: 768px) {
+            .dashboard-header {
+                padding: 15px;
+            }
+            .dashboard-header h2 {
+                font-size: 22px;
+            }
+            .dashboard-content {
+                padding: 20px;
+            }
+            .table thead th,
+            .table tbody td {
+                padding: 10px;
+                font-size: 14px;
+            }
+            .table tbody td form {
+                flex-direction: column;
+                gap: 5px;
+            }
+            .btn-update {
+                padding: 6px 10px;
+                font-size: 12px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="dashboard-container">
+        <div class="dashboard-header">
+            <h2><i class="fas fa-tachometer-alt"></i> Stamper Dashboard</h2>
+            <a href="{{ url_for('stamper_login') }}" class="nav-link"><i class="fas fa-sign-out-alt"></i> Logout</a>
+        </div>
+
+        <div class="dashboard-content">
+            <!-- Welcome Message -->
+            <div class="welcome-message">
+                Welcome, Stamper! Manage your tasks below.
+            </div>
+
+            <!-- Flash Messages -->
+            {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+            <div class="flash-messages">
+                {% for category, message in messages %}
+                <div class="alert alert-{{ category }}">{{ message }}</div>
+                {% endfor %}
+            </div>
+            {% endif %}
+            {% endwith %}
+
+            <!-- Task Table -->
+            <div class="table-container">
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>Task ID</th>
+                            <th>Order ID</th>
+                            <th>Product</th>
+                            <th>Quantity</th>
+                            <th>Machine</th>
+                            <th>Your Status</th>
+                            <th>Operative Status</th>
+                            <th>Update Status</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for task in tasks %}
+                        <tr>
+                            <td>{{ task.id }}</td>
+                            <td>{{ task.order_id }}</td>
+                            <td>{{ task.product_name }}</td>
+                            <td>{{ task.quantity }}</td>
+                            <td>{{ task.machine_id }}</td>
+                            <td>{{ task.stamper_status }}</td>
+                            <td>{{ task.operative_status }}</td>
+                            <td>
+                                <form method="POST" action="{{ url_for('update_task_status', task_id=task.id) }}">
+                                    <select name="status" class="form-select">
+                                        <option value="Pending" {% if task.stamper_status == 'Pending' %}selected{% endif %}>Pending</option>
+                                        <option value="Processing" {% if task.stamper_status == 'Processing' %}selected{% endif %}>Processing</option>
+                                        <option value="Completed" {% if task.stamper_status == 'Completed' %}selected{% endif %}>Completed</option>
+                                    </select>
+                                    <button type="submit" class="btn-update">Update</button>
+                                </form>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

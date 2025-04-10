@@ -1,0 +1,329 @@
+<! -- written by harsh -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Machine Monitoring</title>
+    <!-- Google Fonts (Roboto) -->
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <!-- Font Awesome for Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css"/>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Roboto', sans-serif;
+        }
+        body {
+            background: url("{{ url_for('static', filename='images/machine.jpg') }}") no-repeat center center fixed;
+            background-size: cover;
+            min-height: 100vh;
+            position: relative;
+        }
+        body::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.75);
+            z-index: 1;
+        }
+        .monitoring-container {
+            position: relative;
+            z-index: 2;
+            padding: 20px;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+        .monitoring-header {
+            background: #1a252f;
+            color: #d4af37;
+            padding: 20px;
+            border-bottom: 1px solid #d4af37;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+        .monitoring-header h2 {
+            font-size: 26px;
+            font-weight: 400;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            letter-spacing: 1px;
+        }
+        .monitoring-header h2 i {
+            font-size: 28px;
+        }
+        .monitoring-header .nav-link {
+            color: #d4af37;
+            font-size: 14px;
+            font-weight: 300;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            transition: color 0.3s ease;
+        }
+        .monitoring-header .nav-link:hover {
+            color: #f0c14b;
+        }
+        .monitoring-header .search-bar {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .monitoring-header .search-bar input {
+            padding: 8px 12px;
+            border: 1px solid #d4af37;
+            background: #f9fafb;
+            outline: none;
+            font-size: 14px;
+            color: #1a252f;
+        }
+        .monitoring-header .search-bar button {
+            background: #d4af37;
+            color: #1a252f;
+            padding: 8px 12px;
+            border: none;
+            font-size: 14px;
+            transition: background 0.3s ease;
+        }
+        .monitoring-header .search-bar button:hover {
+            background: #f0c14b;
+        }
+        .monitoring-content {
+            flex: 1;
+            padding: 30px;
+            max-width: 1200px;
+            margin: 0 auto;
+            width: 100%;
+        }
+        .table-container {
+            background: #fff;
+            border: 1px solid #d4af37;
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
+            overflow-x: auto;
+        }
+        .table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 0;
+        }
+        .table thead {
+            background: #1a252f;
+            color: #d4af37;
+        }
+        .table thead th {
+            padding: 15px;
+            font-weight: 500;
+            text-align: left;
+            border-bottom: 1px solid #d4af37;
+        }
+        .table tbody tr {
+            transition: background 0.3s ease;
+        }
+        .table tbody tr:hover {
+            background: #f9fafb;
+        }
+        .table tbody td {
+            padding: 15px;
+            border-bottom: 1px solid #e5e7eb;
+            color: #1a252f;
+        }
+        .table tbody td form {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .table tbody td select {
+            padding: 8px;
+            border: 1px solid #d1d5db;
+            border-left: 3px solid #d4af37;
+            background: #f9fafb;
+            outline: none;
+            transition: border-color 0.3s ease;
+            font-size: 14px;
+            width: 150px;
+        }
+        .table tbody td select:focus {
+            border-color: #d4af37;
+            border-left-color: #d4af37;
+        }
+        .status-badge {
+            padding: 5px 10px;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: 500;
+            color: #fff;
+        }
+        .status-running {
+            background: #28a745;
+        }
+        .status-idle {
+            background: #ffc107;
+            color: #1a252f;
+        }
+        .status-maintenance {
+            background: #dc3545;
+        }
+        .status-offline {
+            background: #6c757d;
+        }
+        .btn-update {
+            background: #d4af37;
+            color: #1a252f;
+            padding: 8px 15px;
+            font-size: 14px;
+            font-weight: 500;
+            border: none;
+            transition: background 0.3s ease, transform 0.1s ease;
+        }
+        .btn-update:hover {
+            background: #f0c14b;
+            transform: translateY(-1px);
+        }
+        .flash-messages {
+            margin-bottom: 25px;
+        }
+        .flash-messages .alert {
+            background: #fefce8;
+            color: #854d0e;
+            border: 1px solid #fef08a;
+            padding: 12px;
+            margin-bottom: 10px;
+            text-align: center;
+            font-size: 14px;
+        }
+        .flash-messages .alert-success {
+            background: #ecfdf5;
+            color: #065f46;
+            border-color: #6ee7b7;
+        }
+        .flash-messages .alert-danger {
+            background: #fef2f2;
+            color: #991b1b;
+            border-color: #f87171;
+        }
+        @media (max-width: 768px) {
+            .monitoring-header {
+                padding: 15px;
+            }
+            .monitoring-header h2 {
+                font-size: 22px;
+            }
+            .monitoring-content {
+                padding: 20px;
+            }
+            .table thead th,
+            .table tbody td {
+                padding: 10px;
+                font-size: 14px;
+            }
+            .table tbody td form {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 5px;
+            }
+            .table tbody td select {
+                width: 100%;
+                font-size: 12px;
+            }
+            .btn-update {
+                padding: 6px 10px;
+                font-size: 12px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="monitoring-container">
+        <div class="monitoring-header">
+            <h2><i class="fas fa-cogs"></i> Machine Monitoring</h2>
+            <div class="search-bar">
+                <input type="text" placeholder="Search machines..." id="searchInput">
+                <button><i class="fas fa-search"></i></button>
+            </div>
+            <a href="{{ url_for('dashboard') }}" class="nav-link"><i class="fas fa-arrow-left"></i> Back to Dashboard</a>
+        </div>
+
+        <div class="monitoring-content">
+            <!-- Flash Messages -->
+            {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+            <div class="flash-messages">
+                {% for category, message in messages %}
+                <div class="alert alert-{{ category }}">{{ message }}</div>
+                {% endfor %}
+            </div>
+            {% endif %}
+            {% endwith %}
+
+            <!-- Machines Table -->
+            <div class="table-container">
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>Machine ID</th>
+                            <th>Name</th>
+                            <th>Description</th>
+                            <th>Status</th>
+                            <th>Update Status</th>
+                        </tr>
+                    </thead>
+                    <tbody id="machinesTable">
+                        {% for machine in machines %}
+                        <tr>
+                            <td>{{ machine[0] }}</td>
+                            <td>{{ machine[1] }}</td>
+                            <td>{{ machine[2] }}</td>
+                            <td>
+                                <span class="status-badge status-{{ machine[3] | lower }}">{{ machine[3] }}</span>
+                            </td>
+                            <td>
+                                <form method="POST" action="{{ url_for('update_machine_status', machine_id=machine[0]) }}">
+                                    <select name="status" class="form-select">
+                                        <option value="Running" {% if machine[3] == 'Running' %}selected{% endif %}>Running</option>
+                                        <option value="Idle" {% if machine[3] == 'Idle' %}selected{% endif %}>Idle</option>
+                                        <option value="Maintenance" {% if machine[3] == 'Maintenance' %}selected{% endif %}>Maintenance</option>
+                                        <option value="Offline" {% if machine[3] == 'Offline' %}selected{% endif %}>Offline</option>
+                                    </select>
+                                    <button type="submit" class="btn-update">Update</button>
+                                </form>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Search functionality for the machines table
+        document.getElementById('searchInput').addEventListener('input', function(e) {
+            const searchTerm = e.target.value.toLowerCase();
+            const rows = document.querySelectorAll('#machinesTable tr');
+            rows.forEach(row => {
+                const machineId = row.cells[0].textContent.toLowerCase();
+                const name = row.cells[1].textContent.toLowerCase();
+                const description = row.cells[2].textContent.toLowerCase();
+                const status = row.cells[3].textContent.toLowerCase();
+                if (machineId.includes(searchTerm) || name.includes(searchTerm) || 
+                    description.includes(searchTerm) || status.includes(searchTerm)) {
+                    row.style.display = '';
+                } else {
+                    row.style.display = 'none';
+                }
+            });
+        });
+    </script>
+</body>
+</html>

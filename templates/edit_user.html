@@ -1,0 +1,34 @@
+<! -- written by harsh -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>Edit User</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+</head>
+<body class="bg-light">
+    <div class="container mt-5">
+        <h2 class="text-center">Edit User</h2>
+        <form method="POST" class="w-50 mx-auto bg-white p-4 shadow rounded">
+            <div class="mb-3">
+                <label>Name:</label>
+                <input type="text" name="name" class="form-control" value="{{ user[1] }}" required>
+            </div>
+            <div class="mb-3">
+                <label>Email:</label>
+                <input type="email" name="email" class="form-control" value="{{ user[2] }}" required>
+            </div>
+            <div class="mb-3">
+                <label>Role:</label>
+                <select name="role" class="form-control">
+                    <option value="admin" {% if user[3]=='admin' %}selected{% endif %}>Admin</option>
+                    <option value="floor_manager" {% if user[3]=='floor_manager' %}selected{% endif %}>Floor Manager</option>
+                    <option value="production_manager" {% if user[3]=='production_manager' %}selected{% endif %}>Production Manager</option>
+                    <option value="marketing_manager" {% if user[3]=='marketing_manager' %}selected{% endif %}>Marketing Manager</option>
+                </select>
+            </div>
+            <button type="submit" class="btn btn-primary w-100">Update User</button>
+        </form>
+        <a href="{{ url_for('user_management') }}" class="btn btn-secondary mt-3">Back</a>
+    </div>
+</body>
+</html>
