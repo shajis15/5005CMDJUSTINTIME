@@ -50,6 +50,17 @@ See `Project_Setup_Instructions.docx` for full setup guidance.
 pip install flask
 pip install reportlab
 python app.py
+Python Dependencies to Install
+pip install flask
+pip install flask-mysqldb
+pip install reportlab
+pip install werkzeug
+pip install flask-session
+pip install flask-login
+pip install python-dotenv
+pip install flask-debugtoolbar
+pip install black
+pip install pylint
 
 ## 🌐 App Access Links (Localhost)
 
