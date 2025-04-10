@@ -47,9 +47,6 @@ JustInTime is a Flask-based web application designed for FloatFry, a fictional f
 pip install flask
 pip install reportlab
 python app.py
-pip install flask
-pip install reportlab
-python app.py
 ```
 
 ## 📦 Python Dependencies
