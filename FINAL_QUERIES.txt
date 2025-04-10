@@ -1,0 +1,340 @@
+-- Create new database for UML representation
+DROP DATABASE IF EXISTS justintimedb_test;
+CREATE DATABASE justintimedb_test;
+USE justintimedb_test;
+
+-- Written by Rajshree (handles database setup and user management)
+CREATE TABLE users (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    name VARCHAR(100) NOT NULL,
+    email VARCHAR(100) UNIQUE NOT NULL,
+    password VARCHAR(255) NOT NULL,
+    role ENUM('admin', 'floor_manager', 'production_manager', 'marketing_manager') NOT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+-- Written by Rajshree (handles user management - insert)
+INSERT INTO users (name, email, password, role, created_at) VALUES
+('Admin User', 'admin@example.com', '$2b$12$X8X8X8X8X8X8X8X8X8X8Xu', 'admin', '2025-03-01 08:45:38');
+
+-- Written by Rajshree (handles customer management - added for UML)
+CREATE TABLE customers (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    name VARCHAR(255) NOT NULL,
+    email VARCHAR(255) NOT NULL UNIQUE,
+    password VARCHAR(255) NOT NULL,
+    created_by_user_id INT,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (created_by_user_id) REFERENCES users(id) ON DELETE SET NULL
+);
+
+-- Written by Rajshree (handles customer management - insert, adjusted for UML)
+INSERT INTO customers (name, email, password, created_by_user_id, created_at) VALUES
+('John', 'john@gmail.com', 'hashed_password', 1, '2025-03-01 08:45:38'),
+('Harsh', 'harsh@gmail.com', 'hashed_password', 1, '2025-03-01 08:45:38'),
+('Random Customer', 'random@example.com', 'hashed_password', 1, '2025-03-01 08:45:38');
+
+-- Written by Shani (handles stamper registration)
+CREATE TABLE stampers (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    name VARCHAR(100) NOT NULL,
+    email VARCHAR(100) UNIQUE NOT NULL,
+    certification TEXT NOT NULL,
+    created_by_user_id INT,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    password VARCHAR(255) NOT NULL,
+    FOREIGN KEY (created_by_user_id) REFERENCES users(id) ON DELETE SET NULL
+);
+
+-- Written by Shani (handles stamper registration - insert)
+INSERT INTO stampers (id, name, email, certification, created_by_user_id, created_at, password) VALUES
+(1, 'Shani', 'shani1@gmail.com', 'stamping expert', 1, '2025-03-01 09:36:29', 'scrypt:32768:8:1$SGfkX6WQofPVEgt2kS$1a9efa5dd121d7be');
+
+-- Written by Shani (handles operative registration)
+CREATE TABLE production_operatives (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    name VARCHAR(100) NOT NULL,
+    email VARCHAR(100) UNIQUE NOT NULL,
+    department VARCHAR(100) NOT NULL,
+    created_by_user_id INT,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    password VARCHAR(255) NOT NULL,
+    FOREIGN KEY (created_by_user_id) REFERENCES users(id) ON DELETE SET NULL
+);
+
+-- Written by Shani (handles operative registration - insert)
+INSERT INTO production_operatives (id, name, email, department, created_by_user_id, created_at, password) VALUES
+(1, 'shani2', 'shani2@gmail.com', 'stamping expert', 1, '2025-03-01 09:36:54', 'scrypt:32768:8:1$syZeGMoHQG4JHqSS$a694721985beba16');
+
+-- Written by Nidhi (handles certifications)
+CREATE TABLE certifications (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    certification_name VARCHAR(255) NOT NULL,
+    machine_names VARCHAR(255),
+    description TEXT,
+    validity_period VARCHAR(255),
+    issuing_authority VARCHAR(255),
+    required_for VARCHAR(255),
+    stamper_id INT,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (stamper_id) REFERENCES stampers(id) ON DELETE SET NULL
+);
+
+-- Written by Nidhi (handles certifications - insert)
+INSERT INTO certifications (id, certification_name, machine_names, description, validity_period, issuing_authority, required_for, stamper_id, created_at) VALUES
+(1, 'Stamping Certification Level 1', 'Stamping Machine', 'Covers safety and operation of stamping machines.', '5 Years', 'National Manufacturing Institute', 'Stamper', 1, '2025-03-04 00:54:12'),
+(2, 'Welding Safety Certificate', 'Welding Machine', 'Ensures safe operation of industrial welding equip...', '3 Years', 'American Welding Society', '', 1, '2025-03-04 00:54:12'),
+(3, 'CNC Operator License', 'CNC Lathe, CNC Milling Machine', 'Teaches precision cutting and safety for CNC equip...', '4 Years', 'CNC Training Center', '', 1, '2025-03-04 00:54:12'),
+(4, 'Heat Treatment Certificate', 'Heat Treatment Furnace', 'Focuses on heat treatment safety and operation.', '5 Years', 'Industrial Heat Processing Institute', 'Stamper', 1, '2025-03-04 00:54:12'),
+(5, 'Laser Cutting Certification', 'Laser Cutting Machine', 'Trains operators to use laser cutting machines saf...', '2 Years', 'Laser Tech Institute', 'All', 1, '2025-03-04 00:54:12'),
+(6, 'Hydraulic Press Safety', 'Hydraulic Press', 'Covers pressure safety and proper press usage.', '6 Years', 'Hydraulic Engineering Association', 'Operative', 1, '2025-03-04 00:54:12'),
+(7, 'Injection Molding Certification', 'Injection Molding', 'Ensures expertise in molding operations.', '3 Years', 'Plastic Molding Institute', '', 1, '2025-03-04 00:54:12'),
+(8, 'Industrial Robotics Certification', 'Automated Assembly Robot', 'Covers programming and handling of robotic systems.', '5 Years', 'Robotics Engineering Board', 'Manager', 1, '2025-03-04 00:54:12');
+
+-- Written by Nidhi (handles machine info)
+CREATE TABLE machine_info (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    name VARCHAR(255) NOT NULL,
+    image_url VARCHAR(255),
+    description TEXT,
+    certifications_required VARCHAR(255),
+    working_hours VARCHAR(255),
+    certification_id INT,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (certification_id) REFERENCES certifications(id) ON DELETE SET NULL
+);
+
+-- Written by Nidhi (handles machine info - insert)
+INSERT INTO machine_info (id, name, image_url, description, certifications_required, working_hours, certification_id, created_at) VALUES
+(1, 'Stamping Machine', 'static/images/stamping_machine.jpg', 'Used for shaping and cutting metal sheets.', 'Stamping Certification Level 1', '8 AM - 5 PM', 1, '2025-03-04 00:48:07'),
+(2, 'Welding Lathe', 'static/images/welding_lathe.jpg', 'Joins metal parts through welding technology.', 'Welding Safety Certificate', '9 AM - 6 PM', 2, '2025-03-04 00:48:07'),
+(3, 'CNC Lathe', 'static/images/cnc_lathe.jpg', 'Computer-controlled lathe for precision cutting.', 'CNC Operator License', '8 AM - 5 PM', 3, '2025-03-04 00:48:07'),
+(4, 'Heat Treatment Furnace', 'static/images/heat_furnace.jpg', 'Used for heat-treating metal to improve hardness.', 'Heat Treatment Certificate', '10 AM - 7 PM', 4, '2025-03-04 00:48:07'),
+(5, '3D Printing Machine', 'static/images/3d_printer.jpg', 'Creates 3D objects from digital models.', '3D Printing Technical Certification', '9 AM - 5 PM', 5, '2025-03-04 00:48:07'),
+(6, 'Laser Cutting Machine', 'static/images/laser_cutter.jpg', 'Precision laser cutting for metal and plastic.', 'Laser Safety Certification', '8 AM - 4 PM', 5, '2025-03-04 00:48:07'),
+(7, 'Hydraulic Press', 'static/images/hydraulic_press.jpg', 'Applies high pressure for shaping materials.', 'Hydraulic Machinery Certification', '7 AM - 6 PM', 6, '2025-03-04 00:48:07'),
+(8, 'CNC Milling Machine', 'static/images/cnc_milling.jpg', 'Uses rotary cutters to remove material from workpi...', 'CNC Milling Operator License', '8 AM - 5 PM', 3, '2025-03-04 00:48:07'),
+(9, 'Injection Molding Machine', 'static/images/injection_molding.jpg', 'Molds plastic into various shapes.', 'Injection Molding Certification', '7 AM - 3 PM', 7, '2025-03-04 00:48:07'),
+(10, 'Grinding Machine', 'static/images/grinding_machine.jpg', 'Grinds metal surfaces to precision.', 'Grinding Machine Certification', '10 AM - 7 PM', 1, '2025-03-04 00:48:07'),
+(11, 'Automated Assembly Robot', 'static/images/assembly_robot.jpg', 'Automates assembly line tasks.', 'Industrial Robotics Certification', '24/7 Operation', 8, '2025-03-04 00:48:07'),
+(12, 'Water Jet Cutting Machine', 'static/images/waterjet_cutter.jpg', 'Uses high-pressure water for cutting.', 'Water Jet Safety Certification', '9 AM - 5 PM', 1, '2025-03-04 00:48:07'),
+(13, 'CNC Plasma Cutter', 'static/images/plasma_cutter.jpg', 'Uses plasma to cut metal sheets.', 'Plasma Cutting Certification', '8 AM - 6 PM', 1, '2025-03-04 00:48:07'),
+(14, 'Rolling Machine', 'static/images/rolling_machine.jpg', 'Rolls metal into sheets of specific thickness.', 'Rolling Machinery Certification', '6 AM - 2 PM', 1, '2025-03-04 00:48:07'),
+(15, 'Automated Sorting System', 'static/images/sorting_system.jpg', 'Sorts and organizes products in factories.', 'Automated Systems Certification', '24/7 Operation', 8, '2025-03-04 00:48:07');
+
+-- Written by Harsh (handles machine monitoring)
+CREATE TABLE machines (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    name VARCHAR(100) NOT NULL,
+    description TEXT NOT NULL,
+    machine_info_id INT,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    status ENUM('Running', 'Idle', 'Maintenance', 'Offline') DEFAULT 'Idle',
+    FOREIGN KEY (machine_info_id) REFERENCES machine_info(id) ON DELETE SET NULL
+);
+
+-- Written by Harsh (handles machine monitoring - insert)
+INSERT INTO machines (id, name, description, machine_info_id, created_at, status) VALUES
+(1, 'Titanium Stamping Machine', 'Used for stamping titanium cookware', 1, '2025-03-01 10:09:00', 'Offline'),
+(2, 'Non-Stick Coating Machine', 'Applies non-stick coatings to cookware', 2, '2025-03-01 10:09:00', 'Offline'),
+(3, 'Induction Base Assembler', 'Assembles induction-compatible cookware bases', 3, '2025-03-01 10:09:00', 'Idle'),
+(4, 'Oven-Safe Hardening Machine', 'Hardens cookware for high-temperature use', 4, '2025-03-01 10:09:00', 'Idle'),
+(5, 'Dishwasher Durability Tester', 'Tests the durability of cookware in dishwashers', 5, '2025-03-01 10:09:00', 'Idle'),
+(6, 'Scratch-Resistant Surface Coater', 'Applies scratch-resistant coating to cookware', 6, '2025-03-01 10:09:00', 'Idle'),
+(7, 'Heat-Seal Joining Machine', 'Seals cookware handles using heat technology', 7, '2025-03-01 10:09:00', 'Idle'),
+(8, 'CNC Metal Cutter', 'Cuts cookware materials into precise shapes', 8, '2025-03-01 10:09:00', 'Idle'),
+(9, 'Powder Coating Applicator', 'Applies powder coating to cookware surfaces', 9, '2025-03-01 10:09:00', 'Idle'),
+(10, 'Multi-layer Surface Bonding Machine', 'Joins multiple layers of cookware material', 10, '2025-03-01 10:09:00', 'Idle'),
+(11, 'High-Speed Engraving Machine', 'Engraves custom signatures onto cookware', 11, '2025-03-01 10:09:00', 'Maintenance'),
+(12, 'Automated Quality Checker', 'Checks cookware quality using AI and sensors', 12, '2025-03-01 10:09:00', 'Idle'),
+(13, 'Final Assembly Robot', 'Automates final assembly of cookware sets', 13, '2025-03-01 10:09:00', 'Idle'),
+(14, 'UV Coating Dryer', 'Cures UV coatings applied to cookware surfaces', 14, '2025-03-01 10:09:00', 'Idle'),
+(15, 'Packaging & Labeling System', 'Automatically packages and labels cookware for sh...', 15, '2025-03-01 10:09:00', 'Idle');
+
+-- Written by Shani (handles product listing)
+CREATE TABLE products (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    product_name VARCHAR(100) NOT NULL,
+    description TEXT NOT NULL,
+    price DECIMAL(10,2) NOT NULL,
+    stock_quantity INT NOT NULL DEFAULT 0,
+    machine_id INT,
+    status ENUM('In Stock', 'Low Stock', 'Out of Stock') DEFAULT 'In Stock',
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    image_filename VARCHAR(255),
+    FOREIGN KEY (machine_id) REFERENCES machines(id) ON DELETE SET NULL
+);
+
+-- Written by Shani (handles product listing - insert)
+INSERT INTO products (id, product_name, description, price, stock_quantity, machine_id, status, created_at) VALUES
+(1, 'Non-stick Frying Pan', 'Durable non-stick frying pan with heat-resistant h...', 25.99, 30, 2, 'In Stock', '2025-03-01 08:45:38'),
+(2, 'Titanium Saucepan', 'Titanium-coated saucepan for high durability.', 39.99, 25, 1, 'In Stock', '2025-03-01 08:45:38'),
+(3, 'Oven-Safe Wok', 'Heavy-duty wok for high-temperature cooking.', 29.99, 20, 4, 'In Stock', '2025-03-01 08:45:38'),
+(4, 'Grill Pan', 'Cast iron grill pan for perfect grilling results.', 34.99, 18, 8, 'In Stock', '2025-03-01 08:45:38'),
+(5, 'Induction-Compatible Skillet', 'Induction-compatible frying skillet.', 27.99, 22, 3, 'In Stock', '2025-03-01 08:45:38'),
+(6, 'Stainless Steel Casserole', 'Multi-purpose stainless steel casserole.', 44.99, 15, 7, 'In Stock', '2025-03-01 08:45:38'),
+(7, 'Double Handle Dutch Oven', 'Cast iron Dutch oven for slow cooking.', 49.99, 12, 4, 'In Stock', '2025-03-01 08:45:38'),
+(8, 'Ceramic Coated Saute Pan', 'Non-toxic ceramic saute pan.', 31.99, 20, 9, 'In Stock', '2025-03-01 08:45:38'),
+(9, 'Hard Anodized Fry Pan', 'Long-lasting, scratch-resistant fry pan.', 28.99, 25, 10, 'In Stock', '2025-03-01 08:45:38'),
+(10, 'Glass Lid Stockpot', 'Stockpot with glass lid and stay-cool handles.', 39.99, 18, 6, 'In Stock', '2025-03-01 08:45:38'),
+(11, 'Chef''s Choice Pan Set', 'Premium cookware set with non-stick coating.', 99.99, 10, 13, 'In Stock', '2025-03-01 08:45:38'),
+(12, 'Multi-layer Non-stick Tava', 'Flat non-stick tava for crepes & pancakes.', 24.99, 30, 2, 'In Stock', '2025-03-01 08:45:38'),
+(13, 'Heavy-duty Roasting Tray', 'Large roasting tray for oven use.', 32.99, 16, 4, 'In Stock', '2025-03-01 08:45:38'),
+(14, 'Pasta Cooking Pot', 'Specialized pasta pot with strainer.', 36.99, 14, 7, 'In Stock', '2025-03-01 08:45:38'),
+(15, 'Copper Core Saucepan', 'Copper core saucepan for even heating.', 45.99, 12, 1, 'In Stock', '2025-03-01 08:45:38');
+
+-- Written by Harsh (handles inventory management)
+CREATE TABLE inventory (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    item_name VARCHAR(100) NOT NULL,
+    category ENUM('Raw Material', 'Finished Product') NOT NULL,
+    quantity INT NOT NULL DEFAULT 0,
+    product_id INT,
+    status ENUM('In Stock', 'Low Stock', 'Out of Stock') DEFAULT 'In Stock',
+    FOREIGN KEY (product_id) REFERENCES products(id) ON DELETE SET NULL
+);
+
+-- Written by Harsh (handles inventory management - insert)
+INSERT INTO inventory (id, item_name, category, quantity, product_id, status) VALUES
+(1, 'Titanium Sheets', 'Raw Material', 100, NULL, 'In Stock'),
+(2, 'Non-Stick Coating Powder', 'Raw Material', 50, NULL, 'In Stock'),
+(3, 'Cookware Handles', 'Raw Material', 80, NULL, 'In Stock'),
+(4, 'Titanium Saucepan', 'Finished Product', 58, 2, 'In Stock'),
+(5, 'Non-stick Frying Pan', 'Finished Product', 168, 1, 'In Stock'),
+(6, 'Induction Base Wok', 'Finished Product', 15, 5, 'In Stock'),
+(7, 'Oven-Safe Wok', 'Finished Product', 20, 3, 'In Stock'),
+(8, 'Grill Pan', 'Finished Product', 20, 4, 'In Stock'),
+(9, 'Induction-Compatible Skillet', 'Finished Product', 20, 5, 'In Stock'),
+(10, 'Stainless Steel Casserole', 'Finished Product', 20, 6, 'In Stock'),
+(11, 'Double Handle Dutch Oven', 'Finished Product', 8, 7, 'Low Stock'),
+(12, 'Ceramic Coated Saute Pan', 'Finished Product', 37, 8, 'In Stock'),
+(13, 'Hard Anodized Fry Pan', 'Finished Product', 76, 9, 'In Stock'),
+(14, 'Glass Lid Stockpot', 'Finished Product', 1424, 10, 'In Stock'),
+(15, 'Chef''s Choice Pan Set', 'Finished Product', 69, 11, 'In Stock'),
+(16, 'Multi-layer Non-stick Tava', 'Finished Product', 61, 12, 'In Stock'),
+(17, 'Heavy-duty Roasting Tray', 'Finished Product', 1204, 13, 'In Stock'),
+(18, 'Pasta Cooking Pot', 'Finished Product', 44, 14, 'In Stock'),
+(19, 'Copper Core Saucepan', 'Finished Product', 1176, 15, 'In Stock');
+
+-- Written by Nidhi (handles inventory restocking)
+CREATE TABLE inventory_orders (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    item_name VARCHAR(100) NOT NULL,
+    quantity_requested INT NOT NULL,
+    inventory_id INT,
+    status ENUM('Pending', 'Approved', 'Rejected') DEFAULT 'Pending',
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (inventory_id) REFERENCES inventory(id) ON DELETE SET NULL
+);
+
+-- Written by Nidhi (handles inventory restocking - insert)
+INSERT INTO inventory_orders (id, item_name, quantity_requested, inventory_id, status, created_at) VALUES
+(1, 'Non-stick Frying Pan', 43, 5, 'Approved', '2025-03-01 10:10:19'),
+(2, 'Non-stick Frying Pan', 43, 5, 'Approved', '2025-03-03 22:12:18'),
+(3, 'Titanium Saucepan', 20, 4, 'Approved', '2025-03-03 22:40:33'),
+(4, 'Non-stick Frying Pan', 20, 5, 'Approved', '2025-03-03 22:40:37'),
+(5, 'Titanium Saucepan', 67, 4, 'Approved', '2025-03-03 21:25:46'),
+(6, 'Non-stick Frying Pan', 76, 5, 'Approved', '2025-03-03 21:25:50'),
+(7, 'Ceramic Coated Saute Pan', 67, 12, 'Approved', '2025-03-03 21:25:56'),
+(8, 'Glass Lid Stockpot', 54, 14, 'Approved', '2025-03-03 21:26:00'),
+(9, 'Pasta Cooking Pot', 54, 18, 'Approved', '2025-03-03 21:26:05'),
+(10, 'Heavy-duty Roasting Tray', 54, 17, 'Approved', '2025-03-03 21:26:09'),
+(11, 'Chef''s Choice Pan Set', 54, 15, 'Approved', '2025-03-03 21:26:32'),
+(12, 'Multi-layer Non-stick Tava', 54, 16, 'Approved', '2025-03-03 21:26:36'),
+(13, 'Non-stick Frying Pan', 1300, 5, 'Approved', '2025-03-04 14:16:32'),
+(14, 'Heavy-duty Roasting Tray', 1200, 17, 'Approved', '2025-03-04 14:16:38'),
+(15, 'Copper Core Saucepan', 1200, 19, 'Approved', '2025-03-04 14:21:50'),
+(16, 'Glass Lid Stockpot', 1200, 14, 'Approved', '2025-03-04 14:22:00'),
+(17, 'Glass Lid Stockpot', 12000, 14, 'Approved', '2025-03-04 14:23:01'),
+(18, 'Non-stick Frying Pan', 1305, 5, 'Approved', '2025-03-04 15:01:39'),
+(19, 'Titanium Saucepan', 70, 4, 'Approved', '2025-03-06 13:34:46'),
+(20, 'Non-stick Frying Pan', 189, 5, 'Approved', '2025-03-06 13:35:00'),
+(21, 'Hard Anodized Fry Pan', 80, 13, 'Approved', '2025-03-06 13:35:05'),
+(22, 'Hard Anodized Fry Pan', 76, 13, 'Approved', '2025-03-18 16:41:09');
+
+-- Written by Harsh (handles order placement)
+CREATE TABLE orders (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    customer_name VARCHAR(100) NOT NULL,
+    email VARCHAR(100) NOT NULL,
+    product_name VARCHAR(100) NOT NULL,
+    quantity INT NOT NULL,
+    customer_id INT,
+    inventory_id INT,
+    status ENUM('Pending', 'Approved', 'Rejected', 'Completed', 'Ready for Delivery') DEFAULT 'Pending',
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (customer_id) REFERENCES customers(id) ON DELETE SET NULL,
+    FOREIGN KEY (inventory_id) REFERENCES inventory(id) ON DELETE SET NULL
+);
+
+-- Written by Harsh (handles order placement - insert)
+INSERT INTO orders (id, customer_name, email, product_name, quantity, customer_id, inventory_id, status, created_at) VALUES
+(1, 'John.com', 'kquwyqdghewjhdgc@gmail.com', 'Titanium Saucepan', 10, 3, 4, 'Pending', '2025-03-03 20:15:25'),
+(2, 'john1', 'qwiudfygbnejdfvv@gmail.com', 'Glass Lid Stockpot', 12, 3, 14, 'Pending', '2025-03-03 20:15:38'),
+(3, 'john3', 'isudfhbjeuufthgbdn@gmail.com', 'Pasta Cooking Pot', 16, 3, 18, 'Pending', '2025-03-03 20:15:51'),
+(4, 'sudyghedygd', 'udyfgbehyf@gmail.com', 'Heavy-duty Roasting Tray', 15, 3, 17, 'Pending', '2025-03-03 20:16:03'),
+(5, 'harsh', 'qkusdygbedhc@gmail.com', 'Ceramic Coated Saute Pan', 15, 2, 12, 'Ready for Delivery', '2025-03-03 20:16:44'),
+(6, 'john', 'weidfuyhreidfk@gmail.com', 'Non-stick Frying Pan', 34, 1, 5, 'Ready for Delivery', '2025-03-03 21:24:34'),
+(7, 'lekjfjerjkf@gmail', 'iwudygehfryg@gmail.com', 'Ceramic Coated Saute Pan', 23, 3, 12, 'Ready for Delivery', '2025-03-03 21:24:52'),
+(8, '2weuirygehjfh', '102weiuytgf3ejf@gmail.com', 'Heavy-duty Roasting Tray', 34, 3, 17, 'Ready for Delivery', '2025-03-03 21:25:07'),
+(9, 'john', 'gtrdfgtrfgtr@gmail.com', 'Copper Core Saucepan', 32, 1, 19, 'Ready for Delivery', '2025-03-04 12:39:31'),
+(10, 'fighfuyhfj', 'harsh@gmail.com', 'Non-stick Frying Pan', 43, 2, 5, 'Ready for Delivery', '2025-03-04 12:39:44'),
+(11, 'john', 'harsh@gmail.com', 'Glass Lid Stockpot', 12000, 1, 14, 'Ready for Delivery', '2025-03-04 14:15:33'),
+(12, 'harsh', '34trhtrew@gmail.com', 'Non-stick Frying Pan', 1305, 2, 5, 'Ready for Delivery', '2025-03-04 14:31:47'),
+(13, 'wertfgerdftg@gmail.com', 'wertfgerdftg@gmail.com', 'Non-stick Frying Pan', 1305, 3, 5, 'Ready for Delivery', '2025-03-04 14:32:09'),
+(14, 'john', 'john@gmail.com', 'Hard Anodized Fry Pan', 20, 1, 13, 'Ready for Delivery', '2025-03-05 07:50:54'),
+(15, 'john', 'r4aesdfgysuyt@gmail.com', 'Titanium Saucepan', 77, 1, 4, 'Ready for Delivery', '2025-03-06 13:18:38'),
+(16, 'john', 'digxhcdh@gmail.com', 'Hard Anodized Fry Pan', 80, 1, 13, 'Approved', '2025-03-11 15:50:28'),
+(17, 'harsh', 'harshp@gmail.com', 'Non-stick Frying Pan', 21, 2, 5, 'Approved', '2025-03-19 08:14:00'),
+(18, 'harsh', 'harshp@gmail.com', 'Titanium Saucepan', 12, 2, 4, 'Approved', '2025-03-19 08:14:00'),
+(19, 'john', 'john@gmail.com', 'Pasta Cooking Pot', 14, 1, 18, 'Approved', '2025-03-19 08:36:49'),
+(20, 'john', 'john@gmail.com', 'Heavy-duty Roasting Tray', 16, 1, 17, 'Approved', '2025-03-19 08:36:49'),
+(21, 'john', 'john@gmail.com', 'Copper Core Saucepan', 12, 1, 19, 'Approved', '2025-03-19 08:36:49'),
+(22, 'john', 'john@gmail.com', 'Double Handle Dutch Oven', 12, 1, 11, 'Approved', '2025-03-22 08:19:32'),
+(23, 'john', 'john@gmail.com', 'Ceramic Coated Saute Pan', 12, 1, 12, 'Approved', '2025-03-22 08:20:05');
+
+-- Written by Rajshree (handles task assignment)
+CREATE TABLE assigned_tasks (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    order_id INT NOT NULL,
+    product_name VARCHAR(100) NOT NULL,
+    quantity INT NOT NULL,
+    stamper_id INT NOT NULL,
+    stamper_status ENUM('Pending', 'Processing', 'Completed') DEFAULT 'Pending',
+    operative_id INT NOT NULL,
+    operative_status ENUM('Pending', 'Processing', 'Completed') DEFAULT 'Pending',
+    machine_id INT NOT NULL,
+    status ENUM('Pending', 'Processing', 'Completed') DEFAULT 'Pending',
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    due_date DATE,
+    FOREIGN KEY (order_id) REFERENCES orders(id) ON DELETE CASCADE,
+    FOREIGN KEY (stamper_id) REFERENCES stampers(id) ON DELETE CASCADE,
+    FOREIGN KEY (operative_id) REFERENCES production_operatives(id) ON DELETE CASCADE,
+    FOREIGN KEY (machine_id) REFERENCES machines(id) ON DELETE CASCADE
+);
+
+-- Written by Rajshree (handles task assignment - insert)
+INSERT INTO assigned_tasks (id, order_id, product_name, quantity, stamper_id, stamper_status, operative_id, operative_status, machine_id, status, created_at) VALUES
+(1, 1, 'Titanium Saucepan', 10, 1, 'Completed', 1, 'Completed', 1, 'Completed', '2025-03-03 20:17:31'),
+(2, 2, 'Glass Lid Stockpot', 12, 1, 'Completed', 1, 'Completed', 1, 'Completed', '2025-03-03 20:17:31'),
+(3, 3, 'Pasta Cooking Pot', 16, 1, 'Completed', 1, 'Completed', 1, 'Completed', '2025-03-03 20:17:32'),
+(4, 4, 'Heavy-duty Roasting Tray', 15, 1, 'Completed', 1, 'Completed', 1, 'Completed', '2025-03-03 20:17:34'),
+(5, 5, 'Ceramic Coated Saute Pan', 15, 1, 'Completed', 1, 'Completed', 1, 'Completed', '2025-03-03 20:17:34'),
+(6, 6, 'Non-stick Frying Pan', 34, 1, 'Completed', 1, 'Completed', 1, 'Completed', '2025-03-03 21:26:59'),
+(7, 7, 'Ceramic Coated Saute Pan', 23, 1, 'Completed', 1, 'Completed', 1, 'Completed', '2025-03-03 21:27:00'),
+(8, 8, 'Heavy-duty Roasting Tray', 34, 1, 'Completed', 1, 'Completed', 1, 'Completed', '2025-03-03 21:27:02'),
+(9, 9, 'Copper Core Saucepan', 32, 1, 'Completed', 1, 'Completed', 1, 'Completed', '2025-03-04 14:23:24'),
+(10, 10, 'Non-stick Frying Pan', 43, 1, 'Completed', 1, 'Completed', 1, 'Completed', '2025-03-04 14:23:25'),
+(11, 11, 'Glass Lid Stockpot', 12000, 1, 'Completed', 1, 'Completed', 1, 'Completed', '2025-03-04 14:23:25'),
+(12, 12, 'Non-stick Frying Pan', 1305, 1, 'Completed', 1, 'Completed', 1, 'Completed', '2025-03-04 14:38:31'),
+(13, 13, 'Non-stick Frying Pan', 1305, 1, 'Completed', 1, 'Completed', 1, 'Completed', '2025-03-04 15:02:11'),
+(14, 14, 'Hard Anodized Fry Pan', 20, 1, 'Completed', 1, 'Completed', 10, 'Completed', '2025-03-05 07:51:37'),
+(15, 15, 'Titanium Saucepan', 77, 1, 'Completed', 1, 'Completed', 6, 'Completed', '2025-03-06 13:21:07'),
+(16, 16, 'Hard Anodized Fry Pan', 80, 1, 'Pending', 1, 'Pending', 1, 'Pending', '2025-03-11 15:56:05'),
+(17, 17, 'Non-stick Frying Pan', 21, 1, 'Pending', 1, 'Pending', 1, 'Pending', '2025-03-19 08:14:28'),
+(18, 18, 'Titanium Saucepan', 12, 1, 'Pending', 1, 'Pending', 1, 'Pending', '2025-03-19 08:14:27'),
+(19, 19, 'Pasta Cooking Pot', 14, 1, 'Pending', 1, 'Pending', 1, 'Pending', '2025-03-21 23:15:49'),
+(20, 20, 'Heavy-duty Roasting Tray', 16, 1, 'Pending', 1, 'Pending', 1, 'Pending', '2025-03-21 23:15:51'),
+(21, 21, 'Copper Core Saucepan', 12, 1, 'Pending', 1, 'Pending', 1, 'Pending', '2025-03-21 23:15:52'),
+(22, 22, 'Double Handle Dutch Oven', 12, 1, 'Pending', 1, 'Pending', 1, 'Pending', '2025-03-22 08:20:03'),
+(23, 23, 'Ceramic Coated Saute Pan', 12, 1, 'Pending', 1, 'Pending', 1, 'Pending', '2025-03-22 08:20:05');
