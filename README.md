@@ -37,10 +37,6 @@ JustInTime is a Flask-based web application designed for FloatFry, a fictional f
 
 ## 🛠️ Setup Instructions
 
-See `Project_Setup_Instructions.docx` for full setup guidance.
-
-### 🔧 Quick Setup
-
 #### 1. **Database Setup**
 - Start MAMP/XAMPP and open phpMyAdmin.
 - Create a new database (e.g., `project_db`).
@@ -50,7 +46,8 @@ See `Project_Setup_Instructions.docx` for full setup guidance.
 pip install flask
 pip install reportlab
 python app.py
-Python Dependencies to Install
+
+### Python Dependencies to Install
 pip install flask
 pip install flask-mysqldb
 pip install reportlab
@@ -63,7 +60,6 @@ pip install black
 pip install pylint
 
 ## 🌐 App Access Links (Localhost)
-
 ### Customer:
 - Register: `http://127.0.0.1:5000/customer/register`
 - Login: `http://127.0.0.1:5000/customer/login`
