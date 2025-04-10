@@ -43,11 +43,20 @@ JustInTime is a Flask-based web application designed for FloatFry, a fictional f
 - Import `final_queries.txt` into your database.
 
 #### 2. **App Setup**
+```bash
 pip install flask
 pip install reportlab
 python app.py
+pip install flask
+pip install reportlab
+python app.py
+```
 
-### Python Dependencies to Install
+## 📦 Python Dependencies
+
+Before running the application, install the following packages:
+
+```bash
 pip install flask
 pip install flask-mysqldb
 pip install reportlab
@@ -58,6 +67,7 @@ pip install python-dotenv
 pip install flask-debugtoolbar
 pip install black
 pip install pylint
+```
 
 ## 🌐 App Access Links (Localhost)
 ### Customer:
